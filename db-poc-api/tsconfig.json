@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    /* Projects */
+    "incremental": true, // Saves .tsbuildinfo files to allow incremental compilation.
+    "module": "commonjs", // Commonly used for Node.js applications.
+    "target": "es2016", // Specifies the version of JavaScript that will be emitted.
+    "moduleResolution": "node", // Uses Node.js module resolution mode.
+    "esModuleInterop": true, // Enables interoperability between CommonJS and ES modules.
+    "forceConsistentCasingInFileNames": true, // Ensures consistent casing in file names.
+
+    /* Module Resolution */
+    "baseUrl": "./src", // Sets the base for module paths.
+    "paths": {
+      "*": ["node_modules/*"] // Specifies where TypeScript can find modules.
+    },
+    "typeRoots": ["node_modules/@types", "src/types"], // Directories where type definitions will be searched.
+    "types": [],
+
+    /* Generation */
+    "declaration": true, // Generates declaration files (.d.ts).
+    "sourceMap": true, // Generates source map files.
+    "outDir": "./dist", // Specifies the output directory for compiled files.
+    "rootDir": "./src",
+
+    /* Type Checking */
+    "strict": true, // Enables all strict type checks.
+    "skipLibCheck": true, // Skips library checking.
+    //"noUnusedLocals": true, // Issues warnings about unused local variables.
+    //"noUnusedParameters": true, // Issues warnings about unused parameters in functions.
+
+    /* Additional Features */
+    "resolveJsonModule": true, // Allows importing JSON files.
+    "removeComments": true // Removes comments from emitted files.
+  },
+  "include": [
+    "src/**/*.ts" // Includes all TypeScript files in the src directory.
+  ],
+  "exclude": [
+    "node_modules" // Excludes the node_modules folder from the compilation.
+  ]
+}

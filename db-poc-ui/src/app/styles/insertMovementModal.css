@@ -1,0 +1,106 @@
+/* Modal Insertar Movimiento */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: #1e1e2f;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    color: #e0e0e0;
+  }
+
+  .modal-content strong {
+    display: block; /* Asegura que el elemento ocupe toda la línea */
+    text-align: center; /* Centra el texto horizontalmente */
+    font-size: 20px;
+    padding: 10px;
+    color: #e0e0e0;
+    margin-bottom: 15px; /* Espaciado inferior opcional */
+  }
+  
+  
+  /* Estilo para los grupos de formulario */
+  .form-group {
+    margin-bottom: 15px;
+    text-align: left;
+  }
+  
+  .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #2a2a3d; /* Fondo oscuro para inputs */
+    color: #e0e0e0; /* Texto claro */
+  }
+  
+  /* Estilo para las opciones del dropdown */
+  .form-group select option {
+    background-color: #333; /* Fondo oscuro para las opciones */
+    color: #f0f8ff; /* Texto claro */
+  }
+  
+  /* Botones del formulario */
+  .form-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .confirm-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .confirm-button:hover {
+    background-color: #218838; /* Verde más oscuro al pasar el mouse */
+  }
+  
+  .cancel-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cancel-button:hover {
+    background-color: #c82333; /* Rojo más oscuro al pasar el mouse */
+  }
+  
+  /* Mensaje de error */
+  .error-message {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #cf6679; /* Rojo claro para mensajes de error */
+  }
+
+  
