@@ -1,6 +1,35 @@
-# Documentación API
+# Documentación API - Sistema de Planillas
 
 **URL Base**: `http://localhost:3001`
+
+## Headers Requeridos (Todas las rutas excepto login)
+```javascript
+{
+  "User-Id": "123",
+  "Content-Type": "application/json"
+}
+```
+
+**Ejemplo de request completo**:
+```javascript
+// GET /api/v2/employees
+{
+  "headers": {
+    "User-Id": "123",
+    "Content-Type": "application/json"
+  }
+}
+```
+
+## Formato de Respuesta Estándar
+```javascript
+{
+  "success": boolean,
+  "data": any,
+  "message": string,
+  "timestamp": string
+}
+```
 
 ## Autenticación
 
@@ -9,39 +38,27 @@
 POST /api/v2/login
 ```
 
-**Descripción**: Inicia sesión de usuario en el sistema.
-
-**Parámetros**: Ninguno
-
 **Body**:
-```json
+```javascript
 {
-  "Username": "string",
-  "Password": "string"
+  "Username": string,
+  "Password": string
 }
 ```
 
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": {
     "loginStatus": {
-      "Id": 1,
-      "Username": "username",
+      "Id": number,
+      "Username": string,
+      "Role": string, // "Admin" o "Employee"
     }
-  }
-}
-```
-
-**Respuesta fallida** (401 Unauthorized):
-```json
-{
-  "success": false,
-  "error": {
-    "code": 5001,
-    "detail": "El usuario o contraseña son incorrectos"
-  }
+  },
+  "message": string,
+  "timestamp": string
 }
 ```
 
@@ -50,439 +67,436 @@ POST /api/v2/login
 POST /api/v2/logout
 ```
 
-**Descripción**: Cierra la sesión del usuario actual.
-
-**Parámetros**: Ninguno
-
-**Body**: Ninguno
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
-  "detail": "Sesión finalizada correctamente"
+  "message": "Sesión cerrada exitosamente",
+  "timestamp": string
 }
 ```
 
 ## Empleados
 
-### Obtener todos los empleados
+### Listar Empleados (Admin)
 ```
-GET /api/v2/employee
+GET /api/v2/employees
 ```
 
-**Descripción**: Obtiene la lista de todos los empleados.
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "data": [
+     {
+      "Id": number,
+      "Name": string,
+      "DateBirth" : date?
+      "DNI": string,
+      "Position": string,
+      "Department": string,
+    }
+  ],
+  "message": string,
+  "timestamp": string
+}
+```
 
-**Parámetros**: Ninguno
+### Buscar Empleados (Admin)
+```
+GET /api/v2/employees/search?filter={searchTerm}
+```
 
-**Body**: Ninguno
+**Query Parameters**:
+- `filter`: string - Término de búsqueda
 
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "data": [
+     {
+      "Id": number,
+      "Name": string,
+      "DateBirth" : date
+      "DNI": string,
+      "Position": string,
+      "Department": string,
+    }
+  ],
+  "message": string,
+  "timestamp": string
+}
+```
+
+### Obtener Empleado por ID (Admin)
+```
+GET /api/v2/employees/{id}
+```
+
+**Path Parameters**:
+- `id`: number - ID del empleado
+
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": {
-    "total": 25,
-    "empleados": [
-      {
-        "Id": 1,
-        "IdPuesto": 1,
-        "NombrePuesto": "",
-        "ValorDocumentoIdentidad": "",
-        "Nombre": "",
-        "FechaContratacion": "",
-        "SaldoVaciones": 15,
-        "EsActivo": true
-      },
-      ...
-    ]
-  }
-}
-```
-
-### Crear nuevo empleado
-```
-POST /api/v2/employee
-```
-
-**Descripción**: Crea un nuevo registro de empleado.
-
-**Parámetros**: Ninguno
-
-**Body**:
-```json
-{
-  "IdPuesto": "number",
-  "ValorDocumentoIdentidad": "string",
-  "NombreEmpleado": "string"
-}
-```
-
-**Respuesta exitosa** (201 Created):
-```json
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "detail": "Empleado creado exitosamente"
-  }
-}
-```
-
-**Respuesta fallida** (400 Bad Request):
-```json
-{
-  "success": false,
-  "error": {
-    "code": 5010,
-    "detail": "El documento de identidad ya existe en el sistema",
-  }
-}
-```
-
-### Actualizar empleado
-```
-PATCH /api/v2/employee/:DNI
-```
-
-**Descripción**: Actualiza información de un empleado existente.
-
-**Parámetros**: 
-- `DNI`: DNI del empleado 
-
-
-**Body**:
-```json
-{
-  "IdPuestoNuevo": "number", 
-  "ValorDocumentoIdentidadNuevo": "string", 
-  "NombreEmpleadoNuevo": "string" 
-}
-```
-
-**Respuesta exitosa** (200 OK):
-```json
-{
-  "success": true,
-  "data": {
-    "message": "Empleado actualizado correctamente",
-    "updatedFields": [
-            "NombrePuesto",
-            "ValorDocumentoIdentidad",
-            "NombreEmpleado"
-        ]
-  }
-}
-```
-
-**Respuesta fallida** (404 Not Found):
-```json
-{
-  "success": false,
-  "error": {
-    "code": 5009,
-    "detail": "No se encontró el empleado con ID 1"
-  }
-}
-```
-
-### Eliminar empleado
-```
-DELETE /api/v2/employee/:IdEmpelado
-```
-
-**Descripción**: Elimina permanentemente un empleado.
-
-**Parámetros**: 
-- `DNI`: DNI del empleado 
-
-
-**Body**: Ninguno
-
-**Respuesta exitosa** (200 OK):
-```json
-{
-  "success": true,
-  "data": {
-    "detail": "Empleado eliminado correctamente"
-  }
-}
-```
-
-### Intentar eliminar empleado (verificación)
-```
-POST /api/v2/employee/deleteTry/:IdEmpelado
-```
-
-**Descripción**: Verifica si un empleado puede ser eliminado sin afectar la integridad de datos.
-
-**Parámetros**: 
-- `IdEmpelado`: Id del empleado
-
-**Body**: 
-```json
-{
-  "IdUser": "number", 
-}
-```
-
-**Respuesta exitosa** (200 OK):
-```json
-{
-  "success": true,
-  "data": {
-    "canDelete": true,
-    "detail": "El empleado puede ser eliminado sin conflictos"
-  }
-}
-```
-
-**Respuesta exitosa con advertencia** (200 OK):
-```json
-{
-  "success": true,
-  "data": {
-    "canDelete": false,
-    "detail": "El empleado no puede ser eliminado",
-  }
-}
-```
-
-### Buscar empleados por nombre
-```
-GET /api/v2/employee/name/:employeeName
-```
-
-**Descripción**: Busca empleados por nombre o parte del nombre.
-
-**Parámetros**:
-- `employeeName`: Nombre o parte del nombre del empleado
-
-**Body**: Ninguno
-
-**Respuesta exitosa** (200 OK):
-```json
-{
-  "success": true,
-  "data": {
-    "total": 3,
-    "empleados": [
-      {
-        "Id": 1,
-        "IdPuesto": 1,
-        "NombrePuesto": "",
-        "ValorDocumentoIdentidad": "",
-        "Nombre": "",
-        "FechaContratacion": "",
-        "SaldoVaciones": 15,
-        "EsActivo": true
-      },
-      // Más empleados...
-    ]
-  }
-}
-```
-
-### Buscar empleados por DNI
-```
-GET /api/v2/employee/DNI/:employeeDNI
-```
-
-**Descripción**: Busca empleados por documento de identidad.
-
-**Parámetros**:
-- `employeeDNI`: Valor del documento de identidad
-
-**Body**: Ninguno
-
-**Respuesta exitosa** (200 OK):
-```json
-{
-  "success": true,
-  "data": {
-    "total": 1,
-    "empleados": [
-      {
-        "Id": 1,
-        "IdPuesto": 1,
-        "NombrePuesto": "",
-        "ValorDocumentoIdentidad": "",
-        "Nombre": "",
-        "FechaContratacion": "",
-        "SaldoVaciones": 1,
-        "EsActivo": true
-      }
-    ]
-  }
-}
-```
-
-## Movimientos
-
-### Obtener movimientos de un empleado
-```
-GET /api/v2/movement/:DNI
-```
-
-**Descripción**: Obtiene todos los movimientos asociados a un empleado específico.
-
-**Parámetros**:
-- `DNI`: DNI del empleado
-
-**Body**: Ninguno
-
-**Respuesta exitosa** (200 OK):
-```json
-{
-  "success": true,
-  "data": {
-    "empleado": {
-      "Id": 1,
-      "Nombre": "Juan Pérez"
+      "Id": number,
+      "Name": string,
+      "DateBirth" : date
+      "DNI": string,
+      "Position": string,
+      "Department": string,
     },
-    "total": 2,
-    "movimientos": [
-      {
-        "Id": 123,
-        "IdEmpleado": 1,
-        "IdTipoMovimiento": 2,
-        "NombreTipoMovimiento": "Vacaciones",
-        "Fecha": "2024-03-10T00:00:00Z",
-        "Monto": 3,
-        "NuevoSaldo": 12,
-        "IdPostByUser": 5,
-        "UsernamePostByUser": "admin",
-        "PostInIp": "192.168.1.5",
-        "PostTime": "2024-03-10T14:30:22Z"
-      },
-      // Más movimientos...
-    ]
-  }
+  "message": string,
+  "timestamp": string
 }
 ```
 
-### Crear nuevo movimiento
+### Crear Empleado (Admin)
 ```
-POST /api/v2/movement/
+POST /api/v2/employees
 ```
-
-**Descripción**: Registra un nuevo movimiento para un empleado.
-
-**Parámetros**: Ninguno
 
 **Body**:
-```json
+```javascript
 {
-  "IdTipoMovimiento": "number",
-  "Monto": "number",
-  "DNIEmpleado": "string",
-  "IdUser": "number"
+  "Name": string,
+  "DocumentTypeId": number,
+  "DateBirth" : date?
+  "DocumentValue": string,
+  "PositionId": number,
+  "DepartmentId": number
 }
 ```
 
-**Respuesta exitosa** (201 Created):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": {
-    "id": 124,
-    "message": "Movimiento registrado correctamente",
-  }
+    "Id": number,
+    "Name": string
+  },
+  "message": "Empleado creado exitosamente con deducciones obligatorias asignadas",
+  "timestamp": string
 }
 ```
 
-**Respuesta fallida** (400 Bad Request):
-```json
+### Actualizar Empleado (Admin)
+```
+PUT /api/v2/employees/{id}
+```
+
+**Path Parameters**:
+- `id`: number - ID del empleado
+
+**Body**:
+```javascript
 {
-  "success": false,
-  "error": {
-    "code": 5999,
-    "detail": "Saldo insuficiente para realizar esta operación"
-  }
+  "Name": string?,
+  "DocumentTypeId": number?,
+  "DateBirth" : date?
+  "DocumentValue": string?,
+  "PositionId": number?,
+  "DepartmentId": number?
+}
+```
+
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "message": "Empleado actualizado exitosamente",
+  "data": {
+    "Id": number,
+    "Name": string
+  },
+  "timestamp": string
+}
+```
+
+### Eliminar Empleado (Admin)
+```
+DELETE /api/v2/employees/{id}
+```
+
+**Path Parameters**:
+- `id`: number - ID del empleado
+
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "message": "Empleado eliminado exitosamente",
+  "data': {},
+  "timestamp": string
+}
+```
+
+### Impersonar Empleado (Admin)
+```
+POST /api/v2/employees/{id}/impersonate
+```
+
+**Path Parameters**:
+- `id`: number - ID del empleado a impersonar
+
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "data": {
+    "employeeInfo":  {
+      "Name": string,
+      "DateBirth" : date?
+      "DNI": string,
+      "Position": string,
+      "Department": string,
+    }
+  },
+  "message": string,
+  "timestamp": string
+}
+```
+
+### Terminar Impersonación (Admin)
+```
+POST /api/v2/employees/{id}/stop-impersonation
+```
+
+
+
+**Path Parameters**:
+- `id`: number - ID del empleado
+
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "message": "Impersonación terminada exitosamente",
+  "data': {},
+  "timestamp": string
+}
+```
+
+## Planillas
+
+### Consultar Planillas Semanales (Usuario/Empleado)
+```
+GET /api/v2/employees/{id}/payroll/weekly/
+```
+
+**Path Parameters**:
+- `id`: number - ID del empleado
+
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "data": [
+    {
+      "WeekId" : Number
+      "StartDate": string, // YYYY-MM-DD
+      "EndDate": string, // YYYY-MM-DD
+      "GrossSalary": number,
+      "TotalDeductions": number,
+      "NetSalary": number,
+      "OrdinaryHours": number,
+      "NormalExtraHours": number,
+      "DoubleExtraHours": number
+    }
+  ],
+  "message": string,
+  "timestamp": string
+}
+```
+
+### Detalle de Deducciones Semanales (Usuario/Empleado)
+```
+GET /api/v2/employees/{id}/payroll/weekly/{weekId}/deductions
+```
+
+**Path Parameters**:
+- `weekId`: number - ID de la semana
+- `id`: number - ID del empleado
+
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "data": [
+    {
+      "DeductionType": string,
+      "isPercentage" : bool,
+      "Percentage": number,
+      "Amount": number
+    }
+  ],
+  "message": string,
+  "timestamp": string
+}
+```
+
+### Detalle de Salario Bruto Semanal (Usuario/Empleado)
+```
+GET /api/v2/employees/{id}/payroll/weekly/{weekId}/gross-detail
+```
+
+**Path Parameters**:
+- `weekId`: number - ID de la semana
+- `id`: number - ID del empleado
+
+
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "data": [
+    {
+      "Date": date, // YYYY-MM-DD
+      "EntryTime": time, // HH:MM
+      "ExitTime": time, // HH:MM
+      "OrdinaryHours": number,
+      "OrdinaryAmount": number,
+      "NormalExtraHours": number,
+      "NormalExtraAmount": number,
+      "DoubleExtraHours": number,
+      "DoubleExtraAmount": number,
+      "DayTotal": number
+    }
+  ],
+  "message": string,
+  "timestamp": string
+}
+```
+
+### Consultar Planillas Mensuales (Usuario/Empleado)
+```
+GET /api/v2/employees/{id}/payroll/monthly
+```
+**Path Parameters**:
+- `id`: number - ID del empleado
+
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "data": [
+    {
+      "Month": number,
+      "Year": number,
+      "MonthName": string,
+      "GrossSalary": number,
+      "TotalDeductions": number,
+      "NetSalary": number
+    }
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
 ## Catálogos
 
-### Obtener tipos de movimiento
+### Tipos de Documento
 ```
-GET /api/v2/movementType
+GET /api/v2/catalogs/document-types
 ```
 
-**Descripción**: Obtiene la lista de todos los tipos de movimiento disponibles.
-
-**Parámetros**: Ninguno
-
-**Body**: Ninguno
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
-  "data": {
-    "total": 3,
-    "tiposMovimiento": [
-      {
-        "Id": 1,
-        "Nombre": "Asignación",
-        "TipoAccion": "SUMA"
-      },
-      {
-        "Id": 2,
-        "Nombre": "Vacaciones",
-        "TipoAccion": "RESTA"
-      },
-      {
-        "Id": 3,
-        "Nombre": "Ajuste",
-        "TipoAccion": "NEUTRO"
-      }
-    ]
-  }
+  "data": [
+    {
+      "Id": number,
+      "Name": string
+    }
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
-### Obtener puestos
+### Puestos
 ```
-GET /api/v2/position
+GET /api/v2/catalogs/positions
 ```
 
-**Descripción**: Obtiene la lista de todos los puestos disponibles.
-
-**Parámetros**: Ninguno
-
-**Body**: Ninguno
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
-  "data": {
-    "total": 4,
-    "puestos": [
-      {
-        "Id": 1,
-        "Nombre": "Gerente",
-        "SalarioPorHora": 25.50
-      },
-      {
-        "Id": 2,
-        "Nombre": "Analista",
-        "SalarioPorHora": 18.75
-      },
-      {
-        "Id": 3,
-        "Nombre": "Desarrollador",
-        "SalarioPorHora": 20.00
-      },
-      {
-        "Id": 4,
-        "Nombre": "Diseñador",
-        "SalarioPorHora": 19.25
-      }
-    ]
-  }
+  "data": [
+    {
+      "Id": number,
+      "Name": string,
+      "HourlySalary": number
+    }
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
-### TODO: Continue with aditional routes
+### Departamentos
+```
+GET /api/v2/catalogs/departments
+```
+
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "data": [
+    {
+      "Id": number,
+      "Name": string
+    }
+  ],
+  "message": string,
+  "timestamp": string
+}
+```
+
+### Tipos de Deducción
+```
+GET /api/v2/catalogs/deduction-types
+```
+
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "data": [
+    {
+      "Id": number,
+      "Name": string,
+      "IsObligatory": boolean,
+      "IsPercentage": boolean,
+      "Percentage": number // Solo si IsPercentage es true
+    }
+  ],
+  "message": string,
+  "timestamp": string
+}
+```
+
+## Respuesta de Error Estándar
+```javascript
+{
+  "success": false,
+  "error": {
+    "code": number,
+    "detail": string
+  },
+  "timestamp": string
+}
+```
+
+## Notas Importantes
+
+1. **User-Id Header**: Todas las rutas (excepto login) requieren el header `User-Id` con el ID del usuario autenticado
+2. **Números Decimales**: Los montos se manejan como números decimales
