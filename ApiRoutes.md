@@ -484,26 +484,6 @@ GET /api/v2/catalogs/deduction-types
 }
 ```
 
-
-
-## Códigos de Error
-
-### Errores de Autenticación
-- `5001`: Usuario o contraseña incorrectos
-- `5002`: Sesión inválida o expirada
-- `5003`: Acceso denegado - permisos insuficientes
-
-### Errores de Validación
-- `4001`: Datos de entrada inválidos
-- `4002`: Empleado no encontrado
-- `4003`: Deducción no encontrada
-- `4004`: Empleado ya tiene esta deducción asignada
-- `4005`: No se puede eliminar deducción obligatoria
-
-### Errores del Sistema
-- `5000`: Error interno del servidor
-- `5004`: Error en el procesamiento de la simulación
-
 ## Respuesta de Error Estándar
 ```javascript
 {
