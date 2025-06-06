@@ -163,6 +163,8 @@ POST /api/v2/employees
 ```javascript
 {
   "Name": string,
+  "NameUser": string,
+  "PasswordUser": string,
   "DocumentTypeId": number,
   "DateBirth" : date?
   "DocumentValue": string,
@@ -355,7 +357,7 @@ GET /api/v2/employees/{id}/payroll/weekly/{weekId}/gross-detail
   "success": true,
   "data": [
     {
-      "Date": date, // YYYY-MM-DD
+      "DateDay": date, // YYYY-MM-DD
       "EntryTime": time, // HH:MM
       "ExitTime": time, // HH:MM
       "OrdinaryHours": number,
