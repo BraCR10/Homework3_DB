@@ -5,7 +5,7 @@
 ## Headers Requeridos (Todas las rutas excepto login)
 ```javascript
 {
-  "User-Id": "123",
+  "User-Id": 123,
   "Content-Type": "application/json"
 }
 ```
@@ -27,7 +27,7 @@
   "success": boolean,
   "data": any,
   "message": string,
-  "timestamp": string
+  "timestamp": date
 }
 ```
 
