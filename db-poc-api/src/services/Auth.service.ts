@@ -26,6 +26,7 @@ class AuthService {
 
     try {
       if (useMock) return { success: true, Id: 1, Username: "test" };
+      
       else {
         const response = await execute("sp_login", params, {});
         if (response.output.outResultCode == 0) {
@@ -36,7 +37,8 @@ class AuthService {
             Username: username,
           };
           return loginResponse;
-        } else {
+        } 
+         else {
           return ErrorHandler(response) as LoginErrorResponseDTO;
         }
       }

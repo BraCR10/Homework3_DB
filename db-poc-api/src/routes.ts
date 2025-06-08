@@ -56,4 +56,9 @@ router.get("/vacation_request", getApplications);
 router.post("/vacation_request", createApplication);
 router.post("/vacation_request/:idSolicitud", issueApplication);
 
+//**************************************************
+//*******************RUTAS NUEVAS*******************
+//**************************************************
+
+
 export default router;

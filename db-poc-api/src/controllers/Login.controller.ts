@@ -41,10 +41,12 @@ export async function loginUser(req: Request, res: Response): Promise<void> {
 
     if (response.success) {
       res.status(200).json(response);
-    } else {
+    } 
+    else {
       res.status(401).json(response);
     }
-  } catch (error) {
+  } 
+  catch (error) {
     const errorMessage: LoginErrorResponseDTO = {
       success: false,
       error: {
