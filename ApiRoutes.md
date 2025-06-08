@@ -31,6 +31,18 @@
 }
 ```
 
+## Respuesta de Error Estándar
+```javascript
+{
+  "success": false,
+  "error": {
+    "code": number,
+    "detail": string
+  },
+  "timestamp": string
+}
+```
+
 ## Autenticación
 
 ### Login
@@ -482,18 +494,6 @@ GET /api/v2/catalogs/deduction-types
     }
   ],
   "message": string,
-  "timestamp": string
-}
-```
-
-## Respuesta de Error Estándar
-```javascript
-{
-  "success": false,
-  "error": {
-    "code": number,
-    "detail": string
-  },
   "timestamp": string
 }
 ```
