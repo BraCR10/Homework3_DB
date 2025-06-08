@@ -2,6 +2,35 @@
 
 **URL Base**: `http://localhost:3001`
 
+## Headers Requeridos (Todas las rutas excepto login)
+```javascript
+{
+  "User-Id": 123,
+  "Content-Type": "application/json"
+}
+```
+
+**Ejemplo de request completo**:
+```javascript
+// GET /api/v2/employees
+{
+  "headers": {
+    "User-Id": "123",
+    "Content-Type": "application/json"
+  }
+}
+```
+
+## Formato de Respuesta Estándar
+```javascript
+{
+  "success": boolean,
+  "data": any,
+  "message": string,
+  "timestamp": date
+}
+```
+
 ## Autenticación
 
 ### Login
@@ -9,41 +38,27 @@
 POST /api/v2/login
 ```
 
-**Descripción**: Inicia sesión de usuario en el sistema.
-
-**Parámetros**: Ninguno
-
 **Body**:
-```json
+```javascript
 {
-  "Username": "string",
-  "Password": "string"
+  "Username": string,
+  "Password": string
 }
 ```
 
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": {
     "loginStatus": {
-      "Id": 1,
-      "Username": "username",
-      "Role": "Admin", //Admin o Employee
-      "EmployeeId": 123
+      "Id": number,
+      "Username": string,
+      "Role": string, // "Admin" o "Employee"
     }
-  }
-}
-```
-
-**Respuesta fallida** (401 Unauthorized):
-```json
-{
-  "success": false,
-  "error": {
-    "code": 5001,
-    "detail": "El usuario o contraseña son incorrectos"
-  }
+  },
+  "message": string,
+  "timestamp": string
 }
 ```
 
@@ -52,17 +67,12 @@ POST /api/v2/login
 POST /api/v2/logout
 ```
 
-**Descripción**: Cierra la sesión del usuario actual.
-
-**Parámetros**: Ninguno
-
-**Body**: Ninguno
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
-  "message": "Sesión cerrada exitosamente"
+  "message": "Sesión cerrada exitosamente",
+  "timestamp": string
 }
 ```
 
@@ -73,54 +83,49 @@ POST /api/v2/logout
 GET /api/v2/employees
 ```
 
-**Descripción**: Lista todos los empleados con información básica.
-
-**Parámetros**: Ninguno
-
-**Body**: Ninguno
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": [
-    {
-      "Id": 1,
-      "Name": "Juan Pérez",
-      "Position": "Desarrollador",
-      "Department": "IT",
-      "IsActive": true
+     {
+      "Id": number,
+      "Name": string,
+      "DateBirth" : date?
+      "DNI": string,
+      "Position": string,
+      "Department": string,
     }
-  ]
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
-### Listar Empleados con Filtro (Admin)
+### Buscar Empleados (Admin)
 ```
 GET /api/v2/employees/search?filter={searchTerm}
 ```
 
-**Descripción**: Busca empleados por nombre con filtro de texto.
+**Query Parameters**:
+- `filter`: string - Término de búsqueda
 
-**Body**: Ninguno
-
-
-**Parámetros de query**: 
-- `filter` (string): Término de búsqueda para filtrar por nombre
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": [
-    {
-      "Id": 1,
-      "Name": "Juan Pérez",
-      "Position": "Desarrollador",
-      "Department": "IT",
-      "IsActive": true
+     {
+      "Id": number,
+      "Name": string,
+      "DateBirth" : date
+      "DNI": string,
+      "Position": string,
+      "Department": string,
     }
-  ]
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
@@ -129,25 +134,23 @@ GET /api/v2/employees/search?filter={searchTerm}
 GET /api/v2/employees/{id}
 ```
 
-**Descripción**: Obtiene información detallada de un empleado específico.
+**Path Parameters**:
+- `id`: number - ID del empleado
 
-**Parámetros**:
-- `id` (int): ID del empleado
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": {
-    "Id": 1,
-    "Name": "Juan Pérez",
-    "DocumentType": "Cedula",
-    "DocumentValue": "123456789",
-    "BirthDate": "1990-01-15",
-    "Position": "Desarrollador",
-    "Department": "IT",
-    "IsActive": true
-  }
+      "Id": number,
+      "Name": string,
+      "DateBirth" : date
+      "DNI": string,
+      "Position": string,
+      "Department": string,
+    },
+  "message": string,
+  "timestamp": string
 }
 ```
 
@@ -156,29 +159,30 @@ GET /api/v2/employees/{id}
 POST /api/v2/employees
 ```
 
-**Descripción**: Crea un nuevo empleado. Se asignan automáticamente las deducciones obligatorias.
-
 **Body**:
-```json
+```javascript
 {
-  "Name": "string",
-  "DocumentTypeId": 1,
-  "DocumentValue": "string",
-  "BirthDate": "YYYY-MM-DD",
-  "PositionId": 1,
-  "DepartmentId": 1
+  "Name": string,
+  "NameUser": string,
+  "PasswordUser": string,
+  "DocumentTypeId": number,
+  "DateBirth" : date?
+  "DocumentValue": string,
+  "PositionId": number,
+  "DepartmentId": number
 }
 ```
 
-**Respuesta exitosa** (201 Created):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": {
-    "Id": 1,
-    "Name": "Juan Pérez",
-    "Message": "Empleado creado exitosamente con deducciones obligatorias asignadas"
-  }
+    "Id": number,
+    "Name": string
+  },
+  "message": "Empleado creado exitosamente con deducciones obligatorias asignadas",
+  "timestamp": string
 }
 ```
 
@@ -187,28 +191,31 @@ POST /api/v2/employees
 PUT /api/v2/employees/{id}
 ```
 
-**Descripción**: Actualiza la información de un empleado existente.
-
-**Parámetros de URL**:
-- `id` (int): ID del empleado
+**Path Parameters**:
+- `id`: number - ID del empleado
 
 **Body**:
-```json
+```javascript
 {
-  "Name": "string",
-  "DocumentTypeId": 1,
-  "DocumentValue": "string",
-  "BirthDate": "YYYY-MM-DD",
-  "PositionId": 1,
-  "DepartmentId": 1
+  "Name": string?,
+  "DocumentTypeId": number?,
+  "DateBirth" : date?
+  "DocumentValue": string?,
+  "PositionId": number?,
+  "DepartmentId": number?
 }
 ```
 
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
-  "message": "Empleado actualizado exitosamente"
+  "message": "Empleado actualizado exitosamente",
+  "data": {
+    "Id": number,
+    "Name": string
+  },
+  "timestamp": string
 }
 ```
 
@@ -217,16 +224,16 @@ PUT /api/v2/employees/{id}
 DELETE /api/v2/employees/{id}
 ```
 
-**Descripción**: Realiza eliminación lógica del empleado.
+**Path Parameters**:
+- `id`: number - ID del empleado
 
-**Parámetros de URL**:
-- `id` (int): ID del empleado
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
-  "message": "Empleado eliminado exitosamente"
+  "message": "Empleado eliminado exitosamente",
+  "data': {},
+  "timestamp": string
 }
 ```
 
@@ -235,85 +242,44 @@ DELETE /api/v2/employees/{id}
 POST /api/v2/employees/{id}/impersonate
 ```
 
-**Descripción**: Permite al administrador impersonar a un empleado específico.
+**Path Parameters**:
+- `id`: number - ID del empleado a impersonar
 
-**Parámetros de URL**:
-- `id` (int): ID del empleado a impersonar
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": {
-    "impersonationToken": "string",
-    "employeeInfo": {
-      "Id": 1,
-      "Name": "Juan Pérez",
-      "Position": "Desarrollador"
+    "employeeInfo":  {
+      "Name": string,
+      "DateBirth" : date?
+      "DNI": string,
+      "Position": string,
+      "Department": string,
     }
-  }
+  },
+  "message": string,
+  "timestamp": string
 }
 ```
 
 ### Terminar Impersonación (Admin)
 ```
-POST /api/v2/employees/stop-impersonation
+POST /api/v2/employees/{id}/stop-impersonation
 ```
 
-**Descripción**: Termina la impersonación y regresa al dashboard de administrador.
 
-**Respuesta exitosa** (200 OK):
-```json
+
+**Path Parameters**:
+- `id`: number - ID del empleado
+
+**Respuesta**:
+```javascript
 {
   "success": true,
-  "message": "Impersonación terminada exitosamente"
-}
-```
-
-## Deducciones
-
-### Asociar Deducción a Empleado (Admin)
-```
-POST /api/v2/employees/{employeeId}/deductions/{deductionId}
-```
-
-**Descripción**: Asocia una deducción no obligatoria a un empleado. Se aplica a partir de la siguiente semana.
-
-**Parámetros de URL**:
-- `employeeId` (int): ID del empleado
-- `deductionId` (int): ID del tipo de deducción
-
-**Body**:
-```json
-{
-  "Amount": 50000.00
-}
-```
-
-**Respuesta exitosa** (200 OK):
-```json
-{
-  "success": true,
-  "message": "Deducción asociada exitosamente. Se aplicará a partir de la siguiente semana."
-}
-```
-
-### Desasociar Deducción de Empleado (Admin)
-```
-DELETE /api/v2/employees/{employeeId}/deductions/{deductionId}
-```
-
-**Descripción**: Desasocia una deducción no obligatoria de un empleado. Se deja de aplicar a partir de la siguiente semana.
-
-**Parámetros de URL**:
-- `employeeId` (int): ID del empleado
-- `deductionId` (int): ID del tipo de deducción
-
-**Respuesta exitosa** (200 OK):
-```json
-{
-  "success": true,
-  "message": "Deducción desasociada exitosamente. Se dejará de aplicar a partir de la siguiente semana."
+  "message": "Impersonación terminada exitosamente",
+  "data': {},
+  "timestamp": string
 }
 ```
 
@@ -321,113 +287,116 @@ DELETE /api/v2/employees/{employeeId}/deductions/{deductionId}
 
 ### Consultar Planillas Semanales (Usuario/Empleado)
 ```
-GET /api/v2/payroll/weekly
+GET /api/v2/employees/{id}/payroll/weekly/
 ```
 
-**Descripción**: Obtiene las últimas 15 planillas semanales del empleado.
+**Path Parameters**:
+- `id`: number - ID del empleado
 
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": [
     {
-      "WeekNumber": 1,
-      "Year": 2025,
-      "StartDate": "2025-01-02",
-      "EndDate": "2025-01-08",
-      "GrossSalary": 150000.00,
-      "TotalDeductions": 25000.00,
-      "NetSalary": 125000.00,
-      "OrdinaryHours": 40,
-      "NormalExtraHours": 5,
-      "DoubleExtraHours": 2
+      "WeekId" : Number
+      "StartDate": string, // YYYY-MM-DD
+      "EndDate": string, // YYYY-MM-DD
+      "GrossSalary": number,
+      "TotalDeductions": number,
+      "NetSalary": number,
+      "OrdinaryHours": number,
+      "NormalExtraHours": number,
+      "DoubleExtraHours": number
     }
-  ]
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
 ### Detalle de Deducciones Semanales (Usuario/Empleado)
 ```
-GET /api/v2/payroll/weekly/{weekId}/deductions
+GET /api/v2/employees/{id}/payroll/weekly/{weekId}/deductions
 ```
 
-**Descripción**: Obtiene el detalle de deducciones de una semana específica.
+**Path Parameters**:
+- `weekId`: number - ID de la semana
+- `id`: number - ID del empleado
 
-**Parámetros de URL**:
-- `weekId` (int): ID de la semana
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": [
     {
-      "DeductionType": "Caja del Seguro",
-      "Percentage": 10.5,
-      "Amount": 15750.00
-    },
-    {
-      "DeductionType": "Cuota Asociación Solidarista",
-      "Percentage": 5.0,
-      "Amount": 7500.00
+      "DeductionType": string,
+      "isPercentage" : bool,
+      "Percentage": number,
+      "Amount": number
     }
-  ]
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
 ### Detalle de Salario Bruto Semanal (Usuario/Empleado)
 ```
-GET /api/v2/payroll/weekly/{weekId}/gross-detail
+GET /api/v2/employees/{id}/payroll/weekly/{weekId}/gross-detail
 ```
 
-**Descripción**: Obtiene el detalle diario del salario bruto de una semana específica.
+**Path Parameters**:
+- `weekId`: number - ID de la semana
+- `id`: number - ID del empleado
 
-**Parámetros de URL**:
-- `weekId` (int): ID de la semana
 
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": [
     {
-      "Date": "2025-01-02",
-      "EntryTime": "08:00",
-      "ExitTime": "17:00",
-      "OrdinaryHours": 8,
-      "OrdinaryAmount": 20000.00,
-      "NormalExtraHours": 1,
-      "NormalExtraAmount": 3750.00,
-      "DoubleExtraHours": 0,
-      "DoubleExtraAmount": 0.00,
-      "DayTotal": 23750.00
+      "DateDay": date, // YYYY-MM-DD
+      "EntryTime": time, // HH:MM
+      "ExitTime": time, // HH:MM
+      "OrdinaryHours": number,
+      "OrdinaryAmount": number,
+      "NormalExtraHours": number,
+      "NormalExtraAmount": number,
+      "DoubleExtraHours": number,
+      "DoubleExtraAmount": number,
+      "DayTotal": number
     }
-  ]
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
 ### Consultar Planillas Mensuales (Usuario/Empleado)
 ```
-GET /api/v2/payroll/monthly
+GET /api/v2/employees/{id}/payroll/monthly
 ```
+**Path Parameters**:
+- `id`: number - ID del empleado
 
-**Descripción**: Obtiene las planillas mensuales de los últimos 12 meses.
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": [
     {
-      "Month": 1,
-      "Year": 2025,
-      "MonthName": "Enero",
-      "GrossSalary": 600000.00,
-      "TotalDeductions": 100000.00,
-      "NetSalary": 500000.00
+      "Month": number,
+      "Year": number,
+      "MonthName": string,
+      "GrossSalary": number,
+      "TotalDeductions": number,
+      "NetSalary": number
     }
-  ]
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
@@ -438,22 +407,18 @@ GET /api/v2/payroll/monthly
 GET /api/v2/catalogs/document-types
 ```
 
-**Descripción**: Obtiene los tipos de documento de identidad disponibles.
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": [
     {
-      "Id": 1,
-      "Name": "Cédula Nacional"
-    },
-    {
-      "Id": 2,
-      "Name": "Pasaporte"
+      "Id": number,
+      "Name": string
     }
-  ]
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
@@ -462,24 +427,19 @@ GET /api/v2/catalogs/document-types
 GET /api/v2/catalogs/positions
 ```
 
-**Descripción**: Obtiene los puestos disponibles.
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": [
     {
-      "Id": 1,
-      "Name": "Desarrollador",
-      "HourlySalary": 2500.00
-    },
-    {
-      "Id": 2,
-      "Name": "Analista",
-      "HourlySalary": 3000.00
+      "Id": number,
+      "Name": string,
+      "HourlySalary": number
     }
-  ]
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
@@ -488,22 +448,18 @@ GET /api/v2/catalogs/positions
 GET /api/v2/catalogs/departments
 ```
 
-**Descripción**: Obtiene los departamentos disponibles.
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": [
     {
-      "Id": 1,
-      "Name": "Tecnología"
-    },
-    {
-      "Id": 2,
-      "Name": "Recursos Humanos"
+      "Id": number,
+      "Name": string
     }
-  ]
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
@@ -512,125 +468,37 @@ GET /api/v2/catalogs/departments
 GET /api/v2/catalogs/deduction-types
 ```
 
-**Descripción**: Obtiene los tipos de deducción disponibles.
-
-**Respuesta exitosa** (200 OK):
-```json
+**Respuesta**:
+```javascript
 {
   "success": true,
   "data": [
     {
-      "Id": 1,
-      "Name": "Embargo por pensión alimenticia",
-      "IsObligatory": false,
-      "IsPercentage": false
-    },
-    {
-      "Id": 2,
-      "Name": "Caja del Seguro",
-      "IsObligatory": true,
-      "IsPercentage": true,
-      "Percentage": 10.5
+      "Id": number,
+      "Name": string,
+      "IsObligatory": boolean,
+      "IsPercentage": boolean,
+      "Percentage": number // Solo si IsPercentage es true
     }
-  ]
+  ],
+  "message": string,
+  "timestamp": string
 }
 ```
 
-## Simulación
-
-### Ejecutar Simulación
-```
-POST /api/v2/simulation/execute
-```
-
-**Descripción**: Ejecuta la simulación con datos de prueba desde XML.
-
-**Body**:
-```json
+## Respuesta de Error Estándar
+```javascript
 {
-  "XmlData": "string", // Contenido del XML de simulación
-  "SimulationDate": "YYYY-MM-DD"
+  "success": false,
+  "error": {
+    "code": number,
+    "detail": string
+  },
+  "timestamp": string
 }
 ```
-
-**Respuesta exitosa** (200 OK):
-```json
-{
-  "success": true,
-  "message": "Simulación ejecutada exitosamente",
-  "data": {
-    "ProcessedEmployees": 10,
-    "ProcessedAttendances": 50,
-    "GeneratedPayrolls": 2
-  }
-}
-```
-
-## Reportes CCSS
-
-### Generar Reporte Mensual CCSS (Admin)
-```
-GET /api/v2/reports/ccss/monthly/{year}/{month}
-```
-
-**Descripción**: Genera el reporte mensual para la CCSS (último jueves del mes).
-
-**Parámetros de URL**:
-- `year` (int): Año del reporte
-- `month` (int): Mes del reporte
-
-**Respuesta exitosa** (200 OK):
-```json
-{
-  "success": true,
-  "data": {
-    "ReportDate": "2025-01-30",
-    "TotalEmployees": 25,
-    "TotalGrossSalary": 5000000.00,
-    "TotalCCSSDeductions": 525000.00,
-    "Employees": [
-      {
-        "EmployeeId": 1,
-        "Name": "Juan Pérez",
-        "DocumentValue": "123456789",
-        "MonthlyGrossSalary": 200000.00,
-        "CCSSDeduction": 21000.00
-      }
-    ]
-  }
-}
-```
-
-## Códigos de Error
-
-### Errores de Autenticación
-- `5001`: Usuario o contraseña incorrectos
-- `5002`: Token de acceso inválido o expirado
-- `5003`: Acceso denegado - permisos insuficientes
-
-### Errores de Validación
-- `4001`: Datos de entrada inválidos
-- `4002`: Empleado no encontrado
-- `4003`: Deducción no encontrada
-- `4004`: Empleado ya tiene esta deducción asignada
-- `4005`: No se puede eliminar deducción obligatoria
-
-### Errores del Sistema
-- `5000`: Error interno del servidor
-- `5003`: Error en la base de datos
-- `5004`: Error en el procesamiento de la simulación
 
 ## Notas Importantes
 
-1. **Jornadas**: El sistema maneja 3 tipos de jornadas (Vespertina, Matutina y Nocturna)
-2. **Cálculo de Salarios**: 
-   - Feriados duplican el salario base
-   - Horas extra normales se pagan a 1.5x
-   - Jornada nocturna se paga a 1.5x
-   - Horas extra dobles (domingos/feriados) se pagan a 2x
-3. **Procesamiento de Planillas**: Se ejecuta todos los jueves a medianoche
-4. **Deducciones**:
-   - Porcentuales: Se aplican cada semana sobre el salario bruto
-   - Fijas: Se dividen entre la cantidad de jueves del mes
-5. **Bitácora**: Todas las operaciones se registran en bitácora con detalles completos
-6. **Reportes CCSS**: Se generan el último jueves de cada mes
+1. **User-Id Header**: Todas las rutas (excepto login) requieren el header `User-Id` con el ID del usuario autenticado
+2. **Números Decimales**: Los montos se manejan como números decimales
