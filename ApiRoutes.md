@@ -5,7 +5,7 @@
 ## Headers Requeridos (Todas las rutas excepto login)
 ```javascript
 {
-  "User-Id": "123",
+  "User-Id": 123,
   "Content-Type": "application/json"
 }
 ```
@@ -27,6 +27,18 @@
   "success": boolean,
   "data": any,
   "message": string,
+  "timestamp": date
+}
+```
+
+## Respuesta de Error Estándar
+```javascript
+{
+  "success": false,
+  "error": {
+    "code": number,
+    "detail": string
+  },
   "timestamp": string
 }
 ```
@@ -91,7 +103,7 @@ GET /api/v2/employees
      {
       "Id": number,
       "Name": string,
-      "DateBirth" : date?
+      "DateBirth" : date
       "DNI": string,
       "Position": string,
       "Department": string,
@@ -163,6 +175,8 @@ POST /api/v2/employees
 ```javascript
 {
   "Name": string,
+  "NameUser": string,
+  "PasswordUser": string,
   "DocumentTypeId": number,
   "DateBirth" : date?
   "DocumentValue": string,
@@ -355,7 +369,7 @@ GET /api/v2/employees/{id}/payroll/weekly/{weekId}/gross-detail
   "success": true,
   "data": [
     {
-      "Date": date, // YYYY-MM-DD
+      "DateDay": date, // YYYY-MM-DD
       "EntryTime": time, // HH:MM
       "ExitTime": time, // HH:MM
       "OrdinaryHours": number,
@@ -480,18 +494,6 @@ GET /api/v2/catalogs/deduction-types
     }
   ],
   "message": string,
-  "timestamp": string
-}
-```
-
-## Respuesta de Error Estándar
-```javascript
-{
-  "success": false,
-  "error": {
-    "code": number,
-    "detail": string
-  },
   "timestamp": string
 }
 ```

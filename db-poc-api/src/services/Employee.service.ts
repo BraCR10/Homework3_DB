@@ -2,6 +2,7 @@ import { execute } from "../config/db.config";
 import { TYPES } from "mssql";
 import { inSqlParameters } from "../types/queryParams.type";
 import { useMock } from "../app";
+import ErrorResponseDTO from "../dtos/ErrorResponseDTO";
 import ErrorHandler from "../utils/ErrorHandler";
 import {
   GetEmployeesSuccessResponseDTO,
@@ -51,43 +52,46 @@ class EmployeeService {
     }
   }
 
-  async getEmployees(): Promise<
+  async getEmployees(userId: number, ip: string): Promise<
     GetEmployeesSuccessResponseDTO | EmployeesErrorResponseDTO
   > {
     if (useMock)
       return {
         success: true,
-        data: {
-          total: 1,
-          empleados: [
+        data: [
             {
               Id: 1,
-              IdPuesto: 1,
-              NombrePuesto: "test",
-              ValorDocumentoIdentidad: "test",
-              Nombre: "test",
-              FechaContratacion: "2023-10-01",
-              SaldoVacaciones: 0,
-              EsActivo: true,
-            },
+              Name: "test",
+              DateBirth: new Date(2005, 11, 12),
+              DNI: "1190232021",
+              Position: "Empleado",
+              Department: "Albañil"
+            }
           ],
-        },
+        message: "",
+        timestamp: new Date().toISOString()
       };
     else {
       try {
-        const response = await execute("sp_listar_empleados", {}, {});
+        const params: inSqlParameters = {
+          inIdUsuario: [String(userId), TYPES.Int],
+          inIP: [ip, TYPES.VarChar],
+        };
+        console.log("as")
+        const response = await execute("sp_listar_empleados", params, {});
         if (response.output.outResultCode == 0) {
           return {
             success: true,
-            data: {
-              total: response.recordset.length,
-              empleados: response.recordset,
-            },
+            data: response.recordset,
+            message: "",
+            timestamp: new Date().toISOString()
           };
-        } else {
-          return ErrorHandler(response) as EmployeesErrorResponseDTO;
+        } 
+        else {
+          return ErrorHandler(response) as ErrorResponseDTO;
         }
-      } catch (error) {
+      } 
+      catch (error) {
         throw new Error("Error fetching the data in the DB.");
       }
     }

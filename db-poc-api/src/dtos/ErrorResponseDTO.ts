@@ -3,5 +3,6 @@ export default interface ErrorResponseDTO {
   error: {
     code: number;
     detail: string;
-  };
+  },
+  timestamp: string
 }

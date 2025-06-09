@@ -3,10 +3,17 @@ import { Employee } from "../models/EmployeeModel";
 
 export interface GetEmployeesSuccessResponseDTO {
   success: boolean;
-  data: {
-    total: number;
-    empleados: Employee[];
-  };
+  data:
+     {
+      Id: number,
+      Name: string,
+      DateBirth : Date,
+      DNI: string,
+      Position: string,
+      Department: string,
+    }[],
+  message: string,
+  timestamp: string
 }
 
 export interface CreateEmployeesDTO {
