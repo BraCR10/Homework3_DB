@@ -3,6 +3,7 @@ import "./styles/globals.css";
 import EmployeeLayout from "./employee/EmployeeLayout";
 import WeeklyPayroll from "./employee/WeeklyPayroll";
 import MonthlyPayroll from "./employee/MonthlyPayroll";
+import LoginForm from "./components/loginComponents/LoginForm";
 import React, { useEffect, useState } from "react";
 
 // Define la interfaz para el usuario autenticado
@@ -15,6 +16,7 @@ interface AuthUser {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Recupera el usuario del localStorage al cargar la app
   useEffect(() => {
@@ -22,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     if (usuarioGuardado) {
       setUser(JSON.parse(usuarioGuardado));
     }
+    setLoading(false);
   }, []);
 
   // Función de logout (elimina usuario y recarga)
@@ -31,8 +34,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     window.location.reload();
   };
 
-  // Loader mientras carga el usuario
-  if (user === null) {
+  // Mientras verifica el localStorage
+  if (loading) {
     return (
       <html lang="es">
         <body>
@@ -42,8 +45,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     );
   }
 
+  // Si no hay usuario, muestra el login
+  if (!user) {
+    return (
+      <html lang="es">
+        <body>
+          <LoginForm />
+        </body>
+      </html>
+    );
+  }
+
   // Si es empleado, muestra solo la UI de empleado
-  if (user.Role === "Empleado" || user.IdTipoUsuario === 2) {
+  if (user.Role === "Employee" || user.IdTipoUsuario === 2) {
     return (
       <html lang="es">
         <body>

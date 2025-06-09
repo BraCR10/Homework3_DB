@@ -14,7 +14,7 @@ interface PayrollRow {
   NetSalary: number;
   OrdinaryHours: number;
   NormalExtraHours: number;
-  DobleExtraHours: number;
+  DoubleExtraHours: number;
 }
 
 interface Deduction {
@@ -92,7 +92,7 @@ export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
               <td>₡{row.NetSalary}</td>
               <td>{row.OrdinaryHours}</td>
               <td>{row.NormalExtraHours}</td>
-              <td>{row.DobleExtraHours}</td>
+              <td>{row.DoubleExtraHours}</td>
             </tr>
           ))}
         </tbody>
