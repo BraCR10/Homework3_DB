@@ -115,6 +115,46 @@ export const getEmployees = async (
   }
 };
 
+export const searchEmployees = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const filter = req.query.filter as string;
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.searchEmployees(filter, userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } 
+    else {
+      res.status(500).json(response);
+    }
+  } 
+  catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50008,
+        detail: "Un error ocurrió al buscar empleados"
+      },
+      timestamp: new Date().toISOString()
+    });
+  }
+};
+
 /*
 export const getEmployeeById = async (
   req: Request,
