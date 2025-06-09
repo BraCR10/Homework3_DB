@@ -77,7 +77,6 @@ class EmployeeService {
           inIdUsuario: [String(userId), TYPES.Int],
           inIP: [ip, TYPES.VarChar],
         };
-        console.log("as")
         const response = await execute("sp_listar_empleados", params, {});
         if (response.output.outResultCode == 0) {
           return {
@@ -88,12 +87,59 @@ class EmployeeService {
           };
         } 
         else {
+          console.log(response.output.outResultCode)
           return ErrorHandler(response) as ErrorResponseDTO;
         }
       } 
       catch (error) {
         throw new Error("Error fetching the data in the DB.");
       }
+    }
+  }
+
+  async searchEmployees(
+    filter: string,
+    userId: number,
+    ip: string
+  ): Promise<GetEmployeesSuccessResponseDTO | ErrorResponseDTO> {
+    const params: inSqlParameters = {
+      inBusqueda: [filter, TYPES.VarChar],
+      inIdUsuario: [String(userId), TYPES.Int],
+      inIP: [ip, TYPES.VarChar],
+    };
+    try {
+      if (useMock) {
+        return {
+          success: true,
+          data: [
+            {
+              Id: 1,
+              Name: "Empleado Filtro",
+              DateBirth: new Date(2000, 0, 1),
+              DNI: "12345678",
+              Position: "Empleado",
+              Department: "Recursos Humanos"
+            }
+          ],
+          message: "",
+          timestamp: new Date().toISOString()
+        };
+      } 
+      else {
+        const response = await execute("sp_buscar_empleados", params, {});
+        if (response.output.outResultCode == 0) {
+          return {
+            success: true,
+            data: response.recordset,
+            message: "",
+            timestamp: new Date().toISOString()
+          };
+        } else {
+          return ErrorHandler(response) as ErrorResponseDTO;
+        }
+      }
+    } catch (error) {
+      throw new Error("Error searching employees in the DB.");
     }
   }
   /*

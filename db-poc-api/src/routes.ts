@@ -4,6 +4,7 @@ const router = Router();
 import {
   createEmployee,
   getEmployees,
+  searchEmployees,
   updateEmployee,
   deleteEmployee,
   tryDeleteEmployee,
@@ -20,7 +21,11 @@ router.post("/logout", logoutUser);
 router.post("/login", loginUser);
 
 // Employee routes
-router.get("/employees", getEmployees); 
+router.get("/employees", getEmployees);
+router.get("/employees/search", searchEmployees);
+
+
+
 router.post("/employee", createEmployee);
 router.patch("/employee/:DNI", updateEmployee);
 router.delete("/employee/:DNI", deleteEmployee);
