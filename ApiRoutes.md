@@ -103,7 +103,7 @@ GET /api/v2/employees
      {
       "Id": number,
       "Name": string,
-      "DateBirth" : date?
+      "DateBirth" : date
       "DNI": string,
       "Position": string,
       "Department": string,
