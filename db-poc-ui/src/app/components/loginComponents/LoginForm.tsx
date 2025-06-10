@@ -32,7 +32,6 @@ const LoginForm = () => {
             Id: data.data.loginStatus.Id,
             Username: data.data.loginStatus.Username,
             Role: data.data.loginStatus.Role,
-            IdTipoUsuario: data.data.loginStatus.IdTipoUsuario
           }));
           window.location.reload();
         } else {

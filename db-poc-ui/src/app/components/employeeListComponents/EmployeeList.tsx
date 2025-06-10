@@ -24,21 +24,44 @@ interface Empleado {
   saldoVacaciones: number;
 }
 
+interface Movimiento {
+  id: number;
+  fecha: string;
+  tipoMovimiento: string;
+  monto: number;
+  nuevoSaldo: number;
+  usuario: string;
+  ip: string;
+  estampaTiempo: string;
+}
+
+// Interfaces para evitar el uso de any
+interface EmpleadoBackend {
+  Id: number;
+  Nombre: string;
+  ValorDocumentoIdentidad: string;
+  IdPuesto: number;
+  NombrePuesto: string;
+  SaldoVacaciones: number;
+}
+
+interface MovimientoBackend {
+  Id: number;
+  Fecha: string;
+  NombreTipoMovimiento: string;
+  Monto: number;
+  NuevoSaldo: number;
+  UsernamePostByUser: string;
+  PostInIp: string;
+  PostTime: string;
+}
+
 const EmployeeList = () => {
-  //MOCK de empleados
-  /*
-  const mockEmpleados: Empleado[] = [
-  { id: 1, nombre: 'Juan Pérez', documento: '123456', nombrePuesto: 'Gerente', saldoVacaciones: 10 },
-  { id: 2, nombre: 'María López', documento: '654321', nombrePuesto: 'Analista', saldoVacaciones: 5 },
-  { id: 3, nombre: 'Carlos Gómez', documento: '789012', nombrePuesto: 'Desarrollador', saldoVacaciones: 3 },
-  { id: 4, nombre: 'Ana Torres', documento: '456789', nombrePuesto: 'Diseñador', saldoVacaciones: 2 },
-  { id: 5, nombre: 'Luis Martínez', documento: '987654', nombrePuesto: 'Gerente', saldoVacaciones: 4 },
-  ];*/
-  const [empleados, setEmpleados] = useState<Empleado[]>([]);;
+  const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [filtro, setFiltro] = useState('');
   const [modalConfirmationVisible, setModalConfirmationVisible] = useState(false);
   const [insertEmployeeModalVisible, setInsertEmployeeModalVisible] = useState(false);
-  const [empleadoAEliminar, setEmpleadoAEliminar] = useState<number | null>(null); //su valor puede ser un numero o null, empieza con un null
+  const [empleadoAEliminar, setEmpleadoAEliminar] = useState<number | null>(null);
   const [selectedEmployee, setSelectedEmployee] = useState<{
     id: number;
     nombre: string;
@@ -54,7 +77,7 @@ const EmployeeList = () => {
     nombrePuesto: string;
     saldoVacaciones: number;
   } | null>(null);
-  const router = useRouter(); // Hook para manejar la navegación
+  const router = useRouter();
   const [insertMovementModalVisible, setInsertMovementModalVisible] = useState(false);
   const [employeeForMovement, setEmployeeForMovement] = useState<{
     id: number;
@@ -72,22 +95,18 @@ const EmployeeList = () => {
   } | null>(null);
   const [processVacationModalVisible, setProcessVacationModalVisible] = useState(false);
 
-  //Esta funcion se debe de des-comentar para que la web pida los empleados a la api apenas esta inicie
-  useEffect(() => { //useEffect es un hook que se efectúa apenas se abra la web
+  useEffect(() => {
     fetchEmpleados();
-  }, []); // El array vacío asegura que esto se ejecute solo una vez al montar el componente
-  
+  }, []);
+
   //**************************************************
   //************ACCION DE CARGAR EMPLEADOS************
-  // Obtener la lista inicial de empleados desde el backend
   const fetchEmpleados = async () => {
     try {
       const response = await fetch(`${url}/api/v2/employee`);
       if (response.ok) {
         const data = await response.json();
-        console.log(data.data.empleados)
-        //se recorren todos los empleados del json y se guardan en empleados con los datos necesarios
-        const empleadosBackend = data.data.empleados.map((empleado: any) => ({
+        const empleadosBackend = data.data.empleados.map((empleado: EmpleadoBackend) => ({
           id: empleado.Id,
           nombre: empleado.Nombre,
           documento: empleado.ValorDocumentoIdentidad,
@@ -107,24 +126,17 @@ const EmployeeList = () => {
   };
 
   //**************************************************
-  //******FIN DE ACCION DE CARGAR EMPLEADOS***********
-
-  //**************************************************
   //***************ACCION DE FILTRO*******************
-  //Petición al backend de la lista dependiendo del filtro
   const aplicarFiltro = async () => {
     try {
       let response;
 
-      // Caso 1: No hay filtro
       if (!filtro.trim()) {
         response = await fetch(`${url}/api/v2/employee`);
       }
-      // Caso 2: Filtro por DNI (números)
       else if (/^\d+$/.test(filtro)) {
         response = await fetch(`${url}/api/v2/employee/DNI/${filtro}`);
       }
-      // Caso 3: Filtro por nombre (letras y espacios)
       else if (/^[a-zA-Z\s]+$/.test(filtro)) {
         response = await fetch(`${url}/api/v2/employee/name/${filtro}`);
       } 
@@ -133,11 +145,9 @@ const EmployeeList = () => {
         return;
       }
 
-      // Procesar la respuesta del backend
       if (response.ok) {
         const data = await response.json();
-        console.log(data.data.empleados);
-        const empleadosBackend = data.data.empleados.map((empleado: any) => ({
+        const empleadosBackend = data.data.empleados.map((empleado: EmpleadoBackend) => ({
           id: empleado.Id,
           nombre: empleado.Nombre,
           documento: empleado.ValorDocumentoIdentidad,
@@ -152,21 +162,16 @@ const EmployeeList = () => {
         setEmpleados([]);
       }
     } 
-    
     catch (error) {
       console.error('Error al realizar la solicitud:', error);
       setEmpleados([]);
     }
   };
-  //**************************************************
-  //***********FIN DE ACCION DE FILTRO****************
 
   //**************************************************
   //***************ACCION DE INSERTAR*****************
   const handleInsert = async (empleado: { documento: string; nombre: string; idPuesto: number }) => {
-    console.log(empleado.idPuesto);
     try {
-      // Realizar la petición POST al backend
       const response = await fetch(`${url}/api/v2/employee`, {
         method: 'POST',
         headers: {
@@ -178,33 +183,26 @@ const EmployeeList = () => {
           NombreEmpleado: empleado.nombre,
         }),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        console.log(data.data.detail); // Mensaje de éxito del backend (borrar)
-  
-        // Actualizar la lista de empleados en el frontend
         fetchEmpleados();
         alert('Empleado insertado correctamente.');
         setInsertEmployeeModalVisible(false);
       } 
       else if (response.status === 400) { 
         const errorData = await response.json();
-        console.error('Error al insertar empleado:', errorData.error.detail); //borrar
         alert(`Error: ${errorData.error.detail}`);
       }
       else {
-        console.error('Error desconocido al insertar empleado:', response.status);
         alert('No se pudo insertar el empleado. Inténtalo de nuevo.');
       }
     } 
     catch (error) {
-      console.error('Error al realizar la solicitud:', error); //borrar
+  console.error(error);
       alert('Ocurrió un error al intentar insertar el empleado.');
     }
   };
-  //**************************************************
-  //************FIN DE ACCION DE INSERTAR*************
 
   //**************************************************
   //**************ACCION DE MODIFICAR*****************
@@ -228,42 +226,30 @@ const EmployeeList = () => {
     },
     DNIanterior: string
   ) => {
-    
-    // Buscar el idPuesto correspondiente al nombrePuesto
     let puestospr: { Id: number; Nombre: string }[] = [];
     try {
       const response = await fetch(`${url}/api/v2/position`);
       if (response.ok) {
         const data = await response.json();
-        puestospr = (data.data.puestos); // Guardar los puestos en el estado
+        puestospr = (data.data.puestos);
       } 
       else {
-        console.error("Error al obtener los puestos:", response.status);
         alert("No se pudieron cargar los puestos. Inténtalo de nuevo.");
       }
     } 
     catch (error) {
-      console.error("Error al realizar la solicitud:", error);
+  console.error(error);
       alert("Ocurrió un error al intentar cargar los puestos.");
     }
-    console.log("PUESTOS:", puestospr)
     const puestoSeleccionado = puestospr.find((puesto) => puesto.Nombre === updatedEmployee.nombrePuesto);
-  
+
     if (!puestoSeleccionado) {
-      console.error("No se encontró el puesto correspondiente al nombrePuesto.");
       alert("No se encontró el puesto correspondiente al nombrePuesto.");
       return;
     }
-  
-    const idPuesto = puestoSeleccionado.Id; // Obtener el idPuesto
-  
-    console.log("Datos enviados al backend:", {
-      IdPuestoNuevo: idPuesto,
-      ValorDocumentoIdentidadNuevo: updatedEmployee.documento,
-      NombreEmpleadoNuevo: updatedEmployee.nombre,
-    });
-    console.log("DNI", DNIanterior);
-  
+
+    const idPuesto = puestoSeleccionado.Id;
+
     try {
       const response = await fetch(`${url}/api/v2/employee/${DNIanterior}`, {
         method: "PATCH",
@@ -271,31 +257,28 @@ const EmployeeList = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          IdPuestoNuevo: idPuesto, // Enviar el idPuesto
+          IdPuestoNuevo: idPuesto,
           ValorDocumentoIdentidadNuevo: updatedEmployee.documento,
           NombreEmpleadoNuevo: updatedEmployee.nombre,
         }),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        console.log(data.data.message); // Mensaje de éxito del backend
-        fetchEmpleados(); // Actualizar la lista de empleados
+        fetchEmpleados();
         setEditEmployeeModalVisible(false);
         alert("Empleado actualizado correctamente.");
       } else if (response.status === 404) {
         const errorData = await response.json();
-        alert(`Error: ${errorData.error.detail}`); // Mostrar mensaje de error del backend
+        alert(`Error: ${errorData.error.detail}`);
       } else {
         alert("Ocurrió un error inesperado al actualizar el empleado.");
       }
     } catch (error) {
-      console.error("Error al actualizar el empleado:", error);
+  console.error(error);
       alert("Ocurrió un error al intentar actualizar el empleado.");
     }
   };
-  //**************************************************
-  //***********FIN DE ACCION DE MODIFICAR*************
 
   //**************************************************
   //**************ACCION DE CONSULTAR*****************
@@ -308,8 +291,6 @@ const EmployeeList = () => {
   }) => {
     setSelectedEmployee(empleado);
   };
-  //**************************************************
-  //*************FIN DE ACCION DE BORRAR**************
 
   //**************************************************
   //*****************ACCION DE BORRAR*****************
@@ -320,42 +301,32 @@ const EmployeeList = () => {
 
   const confirmDelete = async () => {
     if (empleadoAEliminar !== null) {
-      // Buscar el empleado correspondiente al id
       const empleado = empleados.find((emp) => emp.id === empleadoAEliminar);
-  
+
       if (!empleado) {
-        console.error("No se encontró el empleado con el ID proporcionado.");
         alert("No se encontró el empleado a eliminar.");
         return;
       }
-  
-      console.log("Documento del empleado a eliminar:", empleado.documento);
-  
+
       try {
-        // Realizar la petición DELETE al backend con el documento
         const response = await fetch(`${url}/api/v2/employee/${empleado.documento}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
           },
         });
-  
+
         if (response.ok) {
           const data = await response.json();
-          console.log(data.data.detail); // Mensaje de éxito del backend
-  
-          // Actualizar la lista de empleados en el frontend
-          fetchEmpleados(); // Actualizar la lista de empleados
+          fetchEmpleados();
           alert("Empleado eliminado correctamente.");
         } else {
-          console.error("Error al eliminar empleado:", response.status);
           alert("No se pudo eliminar el empleado. Inténtalo de nuevo.");
         }
       } catch (error) {
-        console.error("Error al realizar la solicitud:", error);
+      console.error(error);
         alert("Ocurrió un error al intentar eliminar el empleado.");
       } finally {
-        // Restablecer el valor del estado
         setEmpleadoAEliminar(null);
         setModalConfirmationVisible(false);
       }
@@ -366,20 +337,12 @@ const EmployeeList = () => {
     setEmpleadoAEliminar(null);
     setModalConfirmationVisible(false);
 
-    //enviar peticion al backend (intento de borrado)
-
-    // Obtener el usuario logueado desde el localStorage
     const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
 
-    // Verificar si el Id existe en el objeto recuperado
     if (!usuarioGuardado.Id) {
-      console.error("No se encontró un usuario logueado.");
       alert("No se encontró un usuario logueado.");
       return;
     }
-
-    console.log(empleadoAEliminar)
-    console.log("Id del usuario logueado:", usuarioGuardado.Id);
 
     if (empleadoAEliminar !== null) {
       try {
@@ -390,24 +353,17 @@ const EmployeeList = () => {
           },
           body: JSON.stringify({ IdUser: usuarioGuardado.Id }),
         });
-  
-        if (response.ok) {
-          //no pasa nada
-          //alert('Alerta de intento de borrado con éxito');//borrar
-        } 
-        else {
-          console.error('Error al verificar eliminación:', response.status);
-          alert('No se pudo verificar si el empleado puede ser eliminado. Inténtalo de nuevo.');//borrar
+
+        if (!response.ok) {
+          alert('No se pudo verificar si el empleado puede ser eliminado. Inténtalo de nuevo.');
         }
       } 
       catch (error) {
-        console.error('Error al realizar la solicitud:', error);
-        alert('Ocurrió un error al intentar verificar la eliminación del empleado.'); //borrar
+      console.error(error);
+        alert('Ocurrió un error al intentar verificar la eliminación del empleado.');
       }
     }
   };
-  //**************************************************
-  //************FIN DE ACCION DE BORRAR***************
 
   //**************************************************
   //****************ACCION DE L. MOV.*****************
@@ -417,9 +373,7 @@ const EmployeeList = () => {
     documento: string;
     saldoVacaciones: number;
   }) => {
-    
     try {
-      // Realizar la petición GET al backend
       const response = await fetch(`${url}/api/v2/movement/${empleado.documento}`, {
         method: "GET",
         headers: {
@@ -428,9 +382,8 @@ const EmployeeList = () => {
       });
       if (response.ok) {
         const data = await response.json();
-  
-        // Procesar los datos del empleado y sus movimientos
-        const movimientos = data.data.movimientos.map((movimiento: any) => ({
+
+        const movimientos = data.data.movimientos.map((movimiento: MovimientoBackend) => ({
           id: movimiento.Id,
           fecha: movimiento.Fecha,
           tipoMovimiento: movimiento.NombreTipoMovimiento,
@@ -440,10 +393,7 @@ const EmployeeList = () => {
           ip: movimiento.PostInIp,
           estampaTiempo: movimiento.PostTime,
         }));
-  
-        console.log("Movimientos del empleado:", movimientos);
-  
-        // Redirigir a la página de listar movimientos con los datos del empleado y sus movimientos
+
         router.push(
           `/movement?employeeId=${empleado.id}&employeeName=${encodeURIComponent(
             empleado.nombre
@@ -453,164 +403,14 @@ const EmployeeList = () => {
         );
       } 
       else {
-        console.error("Error al obtener movimientos:", response.status);
         alert("No se pudieron cargar los movimientos del empleado.");
       }
     } 
     catch (error) {
-      console.error("Error al realizar la solicitud:", error);
+    console.error(error);
       alert("Ocurrió un error al intentar cargar los movimientos.");
     }
   };
-  
-  //Mock de movimientos
-  /*
-  const handleMovementList = async () => {
-      const mockEmployee = {
-        id: 1,
-        nombre: "Juan Pérez",
-        documento: "123456",
-        saldoVacaciones: 10,
-      };
-    
-      // Datos de prueba para los movimientos
-      const mockMovimientos = [
-        {
-          id: 1,
-          fecha: "2024-03-10T00:00:00Z",
-          tipoMovimiento: "Vacaciones",
-          monto: 3,
-          nuevoSaldo: 7,
-          usuario: "admin",
-          ip: "192.168.1.5",
-          estampaTiempo: "2024-03-10T14:30:22Z",
-        },
-        {
-          id: 2,
-          fecha: "2024-03-15T00:00:00Z",
-          tipoMovimiento: "Asignación",
-          monto: 5,
-          nuevoSaldo: 12,
-          usuario: "admin",
-          ip: "192.168.1.5",
-          estampaTiempo: "2024-03-15T10:00:00Z",
-        },
-        {
-          id: 3,
-          fecha: "2024-03-20T00:00:00Z",
-          tipoMovimiento: "Vacaciones",
-          monto: 2,
-          nuevoSaldo: 10,
-          usuario: "user1",
-          ip: "192.168.1.10",
-          estampaTiempo: "2024-03-20T09:15:00Z",
-        },
-        {
-          id: 4,
-          fecha: "2024-03-25T00:00:00Z",
-          tipoMovimiento: "Asignación",
-          monto: 4,
-          nuevoSaldo: 14,
-          usuario: "user2",
-          ip: "192.168.1.11",
-          estampaTiempo: "2024-03-25T11:45:00Z",
-        },
-        {
-          id: 5,
-          fecha: "2024-03-30T00:00:00Z",
-          tipoMovimiento: "Vacaciones",
-          monto: 1,
-          nuevoSaldo: 13,
-          usuario: "admin",
-          ip: "192.168.1.5",
-          estampaTiempo: "2024-03-30T14:00:00Z",
-        },
-        {
-          id: 6,
-          fecha: "2024-04-05T00:00:00Z",
-          tipoMovimiento: "Asignación",
-          monto: 6,
-          nuevoSaldo: 19,
-          usuario: "user3",
-          ip: "192.168.1.12",
-          estampaTiempo: "2024-04-05T08:30:00Z",
-        },
-        {
-          id: 7,
-          fecha: "2024-04-10T00:00:00Z",
-          tipoMovimiento: "Vacaciones",
-          monto: 3,
-          nuevoSaldo: 16,
-          usuario: "user4",
-          ip: "192.168.1.13",
-          estampaTiempo: "2024-04-10T13:20:00Z",
-        },
-        {
-          id: 8,
-          fecha: "2024-04-15T00:00:00Z",
-          tipoMovimiento: "Asignación",
-          monto: 7,
-          nuevoSaldo: 23,
-          usuario: "admin",
-          ip: "192.168.1.5",
-          estampaTiempo: "2024-04-15T10:10:00Z",
-        },
-        {
-          id: 9,
-          fecha: "2024-04-20T00:00:00Z",
-          tipoMovimiento: "Vacaciones",
-          monto: 2,
-          nuevoSaldo: 21,
-          usuario: "user5",
-          ip: "192.168.1.14",
-          estampaTiempo: "2024-04-20T16:45:00Z",
-        },
-        {
-          id: 10,
-          fecha: "2024-04-25T00:00:00Z",
-          tipoMovimiento: "Asignación",
-          monto: 8,
-          nuevoSaldo: 29,
-          usuario: "user6",
-          ip: "192.168.1.15",
-          estampaTiempo: "2024-04-25T09:00:00Z",
-        },
-        {
-          id: 11,
-          fecha: "2024-04-30T00:00:00Z",
-          tipoMovimiento: "Vacaciones",
-          monto: 4,
-          nuevoSaldo: 25,
-          usuario: "admin",
-          ip: "192.168.1.5",
-          estampaTiempo: "2024-04-30T12:30:00Z",
-        },
-        {
-          id: 12,
-          fecha: "2024-05-05T00:00:00Z",
-          tipoMovimiento: "Asignación",
-          monto: 10,
-          nuevoSaldo: 35,
-          usuario: "user7",
-          ip: "192.168.1.16",
-          estampaTiempo: "2024-05-05T15:00:00Z",
-        },
-      ];
-      // Redirigir a la página de listar movimientos con los datos del empleado y sus movimientos
-      router.push(
-        `/movement?employeeId=${mockEmployee.id}&employeeName=${encodeURIComponent(
-          mockEmployee.nombre
-        )}&employeeDocumento=${mockEmployee.documento}&employeeSaldoVacaciones=${
-          mockEmployee.saldoVacaciones
-        }&movimientos=${encodeURIComponent(JSON.stringify(mockMovimientos))}&noMovimientos=${
-          mockMovimientos.length === 0
-        }`
-      );
-  };*/
-  
-  
-  //**************************************************
-  //************FIN DE ACCION DE L. MOV***************
 
   //**************************************************
   //****************ACCION DE I. MOV.*****************
@@ -620,14 +420,12 @@ const EmployeeList = () => {
     documento: string;
     saldoVacaciones: number;
   }) => {
-    setEmployeeForMovement(empleado); // Establece el empleado seleccionado
-    setInsertMovementModalVisible(true); // Muestra el modal
+    setEmployeeForMovement(empleado);
+    setInsertMovementModalVisible(true);
   };
-  //**************************************************
-  //****************ACCION DE I. MOV.*****************
+
   //**************************************************
   //****************ACCION DE VACACIONES**************
-  // Función para manejar solicitudes de vacaciones
   const handleRequestVacation = (empleado: {
     id: number;
     nombre: string;
@@ -638,62 +436,47 @@ const EmployeeList = () => {
     setRequestVacationModalVisible(true);
   };
 
-  // Función para ir a la página de listar solicitudes de vacaciones
   const handleListVacations = () => {
     router.push('/vacation');
   };
 
-  // Función para mostrar el modal de tramitar solicitudes
   const handleProcessVacations = () => {
     setProcessVacationModalVisible(true);
   };
-  //**************************************************
-  //************FIN DE ACCION DE VACACIONES***********
 
-  //**************************************************
   //**************************************************
   //****************ACCION DE LOGOUT******************
   const handleLogout = async () => {
     try {
-      // Recuperar el usuario desde el localStorage
       const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
 
-      // Verificar si el Id existe en el objeto recuperado
       if (!usuarioGuardado.Id) {
         alert("No se encontró un usuario logueado.");
         return;
       }
 
-      // Realizar la petición POST al backend para cerrar sesión
       const response = await fetch(`${url}/api/v2/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          UserId: usuarioGuardado.Id, // Pasar el Id recuperado del localStorage
+          UserId: usuarioGuardado.Id,
         }),
       });
-  
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data.detail); // Mensaje de éxito del backend (puede eliminarlo después)
-      } else {
-        console.error("Error al cerrar sesión:", response.status);
-        alert("Ocurrió un error al intentar cerrar la sesión.ss");
+
+      if (!response.ok) {
+        alert("Ocurrió un error al intentar cerrar la sesión.");
       }
     } catch (error) {
-      console.error("Error al realizar la solicitud de logout:", error);
+      console.error(error);
       alert("Ocurrió un error al intentar cerrar la sesión.");
     } finally {
-      // Limpiar el localStorage y redirigir al usuario a la página de login
       localStorage.clear();
-      router.push("/login");
+      window.location.href = "/login";
     }
   };
-  //**************************************************
-  //************FIN DE ACCION DE LOGOUT***************
-  //renderizado
+
   return (
     <div className="listar-empleados-container">
       <h2>Lista de empleados</h2>
@@ -747,12 +530,11 @@ const EmployeeList = () => {
       )}
       {insertMovementModalVisible && employeeForMovement && (
         <InsertMovementModal
-          employee={employeeForMovement} // Pasa los datos del empleado seleccionado
-          onClose={() => setInsertMovementModalVisible(false)} // Cierra el modal
+          employee={employeeForMovement}
+          onClose={() => setInsertMovementModalVisible(false)}
           onSubmit={(newMovement) => {
-            console.log("Nuevo movimiento registrado:", newMovement);
             fetchEmpleados();
-            setInsertMovementModalVisible(false); // Cierra el modal después de registrar el movimiento
+            setInsertMovementModalVisible(false);
           }}
         />
       )}
@@ -775,7 +557,7 @@ const EmployeeList = () => {
           }}
         />
       )}
-  </div>
+    </div>
   );
 };
 
