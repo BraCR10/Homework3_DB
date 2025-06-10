@@ -6,6 +6,7 @@ import ErrorResponseDTO from "../dtos/ErrorResponseDTO";
 import ErrorHandler from "../utils/ErrorHandler";
 import {
   GetEmployeesSuccessResponseDTO,
+  GetEmployeeByIdSuccessResponseDTO,
   CreateEmployeesSuccessResponseDTO,
   CreateEmployeesDTO,
   EmployeesErrorResponseDTO,
@@ -142,6 +143,59 @@ class EmployeeService {
       throw new Error("Error searching employees in the DB.");
     }
   }
+  
+async getEmployeeById(
+  id: number,
+  userId: number,
+  ip: string
+): Promise<GetEmployeeByIdSuccessResponseDTO | EmployeesErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+    inIdEmpleado: [String(id), TYPES.Int],
+  };
+  try {
+    if (useMock) {
+      return {
+        success: true,
+        data: {
+          Id: 1,
+          Name: "Empleado Demo",
+          DateBirth: new Date(2000, 0, 1),
+          DNI: "12345678",
+          Position: "Empleado",
+          Department: "Recursos Humanos"
+        },
+        message: "",
+        timestamp: new Date().toISOString()
+      };
+    } else {
+      const response = await execute("sp_consultar_empleado", params, {});
+      console.log(response.recordset.length)
+      if (response.output.outResultCode == 0 && response.recordset.length > 0) {
+        const data = response.recordset[0];
+        return {
+          success: true,
+          data: {
+            Id: data.Id,
+            Name: data.Name,
+            DateBirth: data.DateBirth,
+            DNI: data.DNI,
+            Position: data.Position,
+            Department: data.Department
+          },
+          message: "",
+          timestamp: new Date().toISOString()
+        };
+      } 
+      else {
+        return ErrorHandler(response) as ErrorResponseDTO;
+      }
+    }
+  } catch (error) {
+    throw new Error("Error fetching employee by ID.");
+  }
+}
   /*
   async getEmployeeById(id: number): Promise<any> {
     if (!id || id < 1) {
