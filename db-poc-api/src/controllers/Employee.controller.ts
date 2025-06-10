@@ -4,6 +4,9 @@ import EmployeeService from "../services/Employee.service";
 import {
   CreateEmployeesDTO,
   UpdateEmployeesDTO,
+  CreateEmployeeRequestDTO,
+  CreateEmployeeSuccessResponseDTO,
+  EmployeesErrorResponseDTO,
   TryDeleteEmployeeDTO,
   DeleteEmployeeDTO,
   GetEmployeeByNameDTO,
@@ -200,6 +203,68 @@ export const getEmployeeById = async (
         detail: "Un error ocurrió al consultar el empleado por ID"
       },
       timestamp: new Date().toISOString()
+    });
+  }
+};
+
+export const createEmployeeV2 = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number.",
+        },
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const data: CreateEmployeeRequestDTO = req.body;
+
+    // Validación básica
+    if (
+      !data.Name ||
+      !data.NameUser ||
+      !data.PasswordUser ||
+      !data.DocumentTypeId ||
+      !data.DocumentValue ||
+      !data.PositionId ||
+      !data.DepartmentId
+    ) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "Todos los campos obligatorios deben estar presentes.",
+        },
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    const response = await EmployeeService.createEmployeeV2(data, userId, ip);
+
+    if (response.success) {
+      res.status(201).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } 
+  catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50008,
+        detail: "Error del sistema creando el empleado",
+      },
+      timestamp: new Date().toISOString(),
     });
   }
 };

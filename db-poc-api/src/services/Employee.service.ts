@@ -10,6 +10,8 @@ import {
   CreateEmployeesSuccessResponseDTO,
   CreateEmployeesDTO,
   EmployeesErrorResponseDTO,
+  CreateEmployeeRequestDTO,
+  CreateEmployeeSuccessResponseDTO,
   UpdateEmployeesDTO,
   UpdateEmployeesSuccessResponseDTO,
   TryDeleteEmployeeDTO,
@@ -169,7 +171,8 @@ async getEmployeeById(
         message: "",
         timestamp: new Date().toISOString()
       };
-    } else {
+    } 
+    else {
       const response = await execute("sp_consultar_empleado", params, {});
       console.log(response.recordset.length)
       if (response.output.outResultCode == 0 && response.recordset.length > 0) {
@@ -194,6 +197,69 @@ async getEmployeeById(
     }
   } catch (error) {
     throw new Error("Error fetching employee by ID.");
+  }
+}
+
+async createEmployeeV2(
+  data: CreateEmployeeRequestDTO,
+  userId: number,
+  ip: string
+): Promise<CreateEmployeeSuccessResponseDTO | EmployeesErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+    inNombre: [data.Name, TYPES.VarChar],
+    inEmpleadoUsuario: [data.NameUser, TYPES.VarChar],
+    inEmpleadoContraseña: [data.PasswordUser, TYPES.VarChar],
+    inIdDocTipo: [String(data.DocumentTypeId), TYPES.Int],
+    inValorDoc: [data.DocumentValue, TYPES.VarChar],
+    inFechaNacimiento: [
+      data.DateBirth
+        ? (typeof data.DateBirth === "string"
+            ? new Date(data.DateBirth).toISOString().slice(0, 10)
+            : data.DateBirth.toISOString().slice(0, 10))
+        : "",
+      TYPES.DateTime
+    ],
+    inIdPuesto: [String(data.PositionId), TYPES.Int],
+    inIdDepartamento: [String(data.DepartmentId), TYPES.Int],
+  };
+  try {
+    if (useMock) {
+      return {
+        success: true,
+        data: { Id: 1, Name: data.Name },
+        message: "Empleado creado exitosamente con deducciones obligatorias asignadas",
+        timestamp: new Date().toISOString(),
+      };
+    } 
+    else {
+      console.log(params)
+      const response = await execute("sp_crear_empleado", params, {});
+      
+      if (response.output.outResultCode == 0 && response.recordset.length > 0) {
+        const emp = response.recordset[0];
+        return {
+          success: true,
+          data: { Id: emp.Id, Name: emp.Name },
+          message: "Empleado creado exitosamente con deducciones obligatorias asignadas",
+          timestamp: new Date().toISOString(),
+        };
+      } 
+      else {
+        return ErrorHandler(response) as ErrorResponseDTO;
+      }
+    }
+  } 
+  catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50008,
+        detail: "Error del sistema creando el empleado",
+      },
+      timestamp: new Date().toISOString(),
+    };
   }
 }
   /*

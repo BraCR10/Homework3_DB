@@ -3,6 +3,7 @@ import { loginUser, logoutUser } from "./controllers/Login.controller";
 const router = Router();
 import {
   createEmployee,
+  createEmployeeV2,
   getEmployees,
   searchEmployees,
   getEmployeeById,
@@ -25,6 +26,9 @@ router.post("/login", loginUser);
 router.get("/employees", getEmployees);
 router.get("/employees/search", searchEmployees);
 router.get("/employees/:id", getEmployeeById);
+router.post("/employees", createEmployeeV2);
+
+
 
 
 router.post("/employee", createEmployee);
