@@ -11,7 +11,6 @@ interface AuthUser {
   Id: number;
   Username: string;
   Role?: string;
-  IdTipoUsuario?: number;
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -57,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }
 
   // Si es empleado, muestra solo la UI de empleado
-  if (user.Role === "Empleado" || user.IdTipoUsuario === 2) {
+  if (user.Role === "Empleado") {
     return (
       <html lang="es">
         <body>
@@ -71,7 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }
 
   // Si es admin, muestra la app normal (todas las rutas y children)
-  if (user.Role === "Administrador" || user.IdTipoUsuario === 1) {
+  if (user.Role === "Administrador") {
     return (
       <html lang="es">
         <body>{children}</body>
