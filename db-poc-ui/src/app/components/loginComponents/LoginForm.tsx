@@ -4,11 +4,13 @@ import InputField from './InputField';
 import LoginMessage from './LoginMessage';
 import '../../styles/login.css';
 const url: string = "http://localhost:3050";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mensaje, setMensaje] = useState('');
+  const router = useRouter(); // Inicializar el router
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,7 +35,12 @@ const LoginForm = () => {
             Username: data.data.loginStatus.Username,
             Role: data.data.loginStatus.Role,
           }));
-          window.location.reload();
+          const role = data.data.loginStatus.Role;
+          if (role === "Administrador") {
+            router.push("/employee");
+          } else if (role === "Empleado") {
+            router.push("/payroll");
+          }
         } else {
           setMensaje('❌ Respuesta inesperada del servidor');
         }
