@@ -66,7 +66,7 @@ POST /api/v2/login
     "loginStatus": {
       "Id": number,
       "Username": string,
-      "Role": string, // "Admin" o "Employee"
+      "Role": string, // "Administrador" o "Empleado"
     }
   },
   "message": string,

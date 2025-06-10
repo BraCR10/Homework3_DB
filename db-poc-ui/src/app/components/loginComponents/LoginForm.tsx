@@ -1,6 +1,4 @@
 "use client";
-//quité lo de router xq no lo estaba usando y me daba error
-//import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import InputField from './InputField';
 import LoginMessage from './LoginMessage';
@@ -11,9 +9,7 @@ const LoginForm = () => {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mensaje, setMensaje] = useState('');
-  
-  //const router = useRouter(); // No se está utilizando, así que lo he comentado
-  
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -49,9 +45,9 @@ const LoginForm = () => {
         setMensaje('❌ Ha ocurrido un error inesperado');
       }
     } catch (error) {
-    console.error(error);
-    setMensaje('❌ No se pudo conectar con el servidor');
-  }
+      console.error(error);
+      setMensaje('❌ No se pudo conectar con el servidor');
+    }
   };
 
   return (

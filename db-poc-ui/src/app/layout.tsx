@@ -57,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }
 
   // Si es empleado, muestra solo la UI de empleado
-  if (user.Role === "Employee" || user.IdTipoUsuario === 2) {
+  if (user.Role === "Empleado" || user.IdTipoUsuario === 2) {
     return (
       <html lang="es">
         <body>
@@ -71,9 +71,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }
 
   // Si es admin, muestra la app normal (todas las rutas y children)
+  if (user.Role === "Administrador" || user.IdTipoUsuario === 1) {
+    return (
+      <html lang="es">
+        <body>{children}</body>
+      </html>
+    );
+  }
+
+  // Si el rol no es válido, fuerza logout
+  localStorage.removeItem("usuario");
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body>
+        <LoginForm />
+      </body>
     </html>
   );
 }
