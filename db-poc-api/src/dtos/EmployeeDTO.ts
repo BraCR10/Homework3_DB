@@ -15,6 +15,40 @@ export interface GetEmployeesSuccessResponseDTO {
   message: string,
   timestamp: string
 }
+export interface GetEmployeeByIdSuccessResponseDTO {
+  success: boolean;
+  data: {
+    Id: number;
+    Name: string;
+    DateBirth: Date;
+    DNI: string;
+    Position: string;
+    Department: string;
+  };
+  message: string;
+  timestamp: string;
+}
+
+export interface CreateEmployeeRequestDTO {
+  Name: string;
+  NameUser: string;
+  PasswordUser: string;
+  DocumentTypeId: number;
+  DateBirth?: Date;
+  DocumentValue: string;
+  PositionId: number;
+  DepartmentId: number;
+}
+
+export interface CreateEmployeeSuccessResponseDTO {
+  success: boolean;
+  data: {
+    Id: number;
+    Name: string;
+  };
+  message: string;
+  timestamp: string;
+}
 
 export interface CreateEmployeesDTO {
   IdPuesto: number;
