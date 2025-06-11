@@ -7,14 +7,12 @@ interface EditEmployeeModalProps {
   employee: {
     id: number;
     nombre: string;
-    documento: string;
     nombrePuesto: string;
   };
   onClose: () => void;
   onSubmit: (updatedEmployee: {
     id: number;
     nombre: string;
-    documento: string;
     nombrePuesto: string;
   }) => void;
 }
@@ -24,7 +22,6 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const [documento, setDocumento] = useState(employee.documento);
   const [nombre, setNombre] = useState(employee.nombre);
   const [nombrePuesto, setNombrePuesto] = useState(employee.nombrePuesto);
   const [mensaje, setMensaje] = useState("");
@@ -53,10 +50,6 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!/^\d+$/.test(documento) && documento !== "") {
-      setMensaje("❌ El documento de identidad debe de contener sólo números.");
-      return;
-    }
     if (!/^[a-zA-Z\s]+$/.test(nombre) && nombre !== "") {
       setMensaje("❌ El nombre del empleado debe de contener sólo caracteres y espacios.");
       return;
@@ -65,7 +58,6 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
     onSubmit({
       id: employee.id,
       nombre,
-      documento,
       nombrePuesto,
     });
   };
@@ -75,17 +67,6 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
       <div className="modal-content">
         <h3>Modificar Empleado</h3>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Documento de Identidad:</label>
-            <input
-              type="text"
-              value={documento}
-              onChange={(e) => {
-                setDocumento(e.target.value);
-                setMensaje("");
-              }}
-            />
-          </div>
           <div className="form-group">
             <label>Nombre:</label>
             <input
