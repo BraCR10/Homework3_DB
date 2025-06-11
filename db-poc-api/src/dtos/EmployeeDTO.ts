@@ -118,8 +118,29 @@ export interface TryDeleteEmployeeSuccessResponseDTO {
   };
 }
 
-export interface DeleteEmployeeDTO {
-  ValorDocumentoIdentidad: string;
+export interface ImpersonateEmployeeSuccessResponseDTO {
+  success: boolean;
+  data: {
+    employeeInfo: {
+      Name: string;
+      DateBirth?: Date;
+      DNI: string;
+      Position: string;
+      Department: string;
+    }
+  };
+  message: string;
+  timestamp: string;
+}
+
+export interface GetDocumentTypesSuccessResponseDTO {
+  success: boolean;
+  data: {
+    Id: number;
+    Name: string;
+  }[];
+  message: string;
+  timestamp: string;
 }
 
 export interface GetEmployeeByNameDTO {

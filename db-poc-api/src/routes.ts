@@ -8,6 +8,7 @@ import {
   deleteEmployeeV2,
   impersonateEmployeeV2,
   stopImpersonationEmployeeV2,
+  getDocumentTypes,
   getEmployees,
   searchEmployees,
   getEmployeeById,
@@ -35,7 +36,7 @@ router.put("/employees/:id", updateEmployeeV2);
 router.delete("/employees/:id", deleteEmployeeV2);
 router.post("/employees/:id/impersonate", impersonateEmployeeV2);
 router.post("/employees/:id/stop-impersonation", stopImpersonationEmployeeV2);
-
+router.get("/catalogs/document-types", getDocumentTypes);
 
 
 

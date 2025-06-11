@@ -18,7 +18,7 @@ import {
   UpdateEmployeesSuccessResponseDTO,
   TryDeleteEmployeeDTO,
   TryDeleteEmployeeSuccessResponseDTO,
-  DeleteEmployeeDTO,
+  GetDocumentTypesSuccessResponseDTO,
   DeleteEmployeeSuccessResponseDTO,
   GetEmployeeByNameDTO,
   GetEmployeeByNameSuccessResponseDTO,
@@ -429,6 +429,39 @@ async stopImpersonationEmployeeV2(
       error: {
         code: 50008,
         detail: "Error del sistema al terminar la impersonación",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getDocumentTypes(
+  userId: number,
+  ip: string
+): Promise<GetDocumentTypesSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+  };
+
+  try {
+    const response = await execute("sp_consultar_tipos_documentos", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50011,
+        detail: "Error del sistema al consultar tipos de documentos",
       },
       timestamp: new Date().toISOString(),
     };
