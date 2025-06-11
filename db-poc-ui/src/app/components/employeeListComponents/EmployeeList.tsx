@@ -7,6 +7,7 @@ import "../../styles/employee.css";
 import "../../styles/insertEmployeeModal.css";
 import EditEmployeeModal from "./EditEmployeeModal";
 import InsertEmployeeModal from "./InsertEmployeeModal";
+import DeleteConfirmationModal from "./DeleteConfirmationModal"; // Importar el modal de confirmación
 import { useRouter } from "next/navigation";
 
 const url: string = "http://localhost:3050";
@@ -47,6 +48,8 @@ const EmployeeList = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Empleado | null>(null);
   const [editEmployeeModalVisible, setEditEmployeeModalVisible] = useState(false);
   const [insertEmployeeModalVisible, setInsertEmployeeModalVisible] = useState(false);
+  const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false); // Estado para el modal de confirmación
+  const [employeeToDelete, setEmployeeToDelete] = useState<number | null>(null); // ID del empleado a eliminar
   const router = useRouter();
 
   useEffect(() => {
@@ -178,8 +181,53 @@ const EmployeeList = () => {
     setEditEmployeeModalVisible(true);
   };
 
-  const handleDelete = (id: number) => {
-    console.log("Eliminar empleado con ID:", id);
+  const handleDelete = async () => {
+    if (!employeeToDelete) return;
+
+    try {
+      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+      if (!usuarioGuardado.Id) {
+        console.error("No se encontró un usuario logueado.");
+        alert("No se encontró un usuario logueado.");
+        return;
+      }
+
+      const response = await fetch(`${url}/api/v2/employees/${employeeToDelete}`, {
+        method: "DELETE",
+        headers: {
+          "User-Id": usuarioGuardado.Id.toString(),
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("Respuesta del servidor:", response);
+
+      if (response.ok) {
+        alert("✅ Empleado eliminado exitosamente.");
+        fetchEmpleados(); // Refrescar la lista de empleados
+        setDeleteConfirmationVisible(false);
+        setEmployeeToDelete(null);
+      } else {
+        const contentType = response.headers.get("Content-Type");
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          console.error("Error al eliminar empleado:", errorData.error.detail);
+          alert(`Error: ${errorData.error.detail}`);
+        } else {
+          const errorText = await response.text();
+          console.error("Error inesperado:", errorText);
+          alert("Ocurrió un error inesperado al intentar eliminar el empleado.");
+        }
+      }
+    } catch (error) {
+      console.error("Error al realizar la solicitud:", error);
+      alert("Ocurrió un error al intentar eliminar el empleado.");
+    }
+  };
+
+  const confirmDelete = (id: number) => {
+    setEmployeeToDelete(id);
+    setDeleteConfirmationVisible(true);
   };
 
   const handleQuery = (empleado: Empleado) => {
@@ -224,7 +272,7 @@ const EmployeeList = () => {
       <EmployeeTable
         empleados={empleados}
         handleEdit={handleEdit}
-        handleDelete={handleDelete}
+        handleDelete={confirmDelete} // Conectar el botón de eliminar
         handleQuery={handleQuery}
         handleMovementList={handleMovementList}
         handleInsertMovement={handleInsertMovement}
@@ -245,6 +293,13 @@ const EmployeeList = () => {
         <InsertEmployeeModal
           onClose={() => setInsertEmployeeModalVisible(false)}
           onSubmit={handleInsertEmployee}
+        />
+      )}
+      {deleteConfirmationVisible && (
+        <DeleteConfirmationModal
+          empleadoId={employeeToDelete!}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteConfirmationVisible(false)}
         />
       )}
     </div>
