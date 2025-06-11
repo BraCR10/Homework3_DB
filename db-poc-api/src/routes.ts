@@ -7,6 +7,7 @@ import {
   updateEmployeeV2,
   deleteEmployeeV2,
   impersonateEmployeeV2,
+  stopImpersonationEmployeeV2,
   getEmployees,
   searchEmployees,
   getEmployeeById,
@@ -33,6 +34,7 @@ router.post("/employees", createEmployeeV2);
 router.put("/employees/:id", updateEmployeeV2);
 router.delete("/employees/:id", deleteEmployeeV2);
 router.post("/employees/:id/impersonate", impersonateEmployeeV2);
+router.post("/employees/:id/stop-impersonation", stopImpersonationEmployeeV2);
 
 
 

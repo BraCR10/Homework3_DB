@@ -25,6 +25,7 @@ import {
   GetEmployeeByDNIDTO,
   GetEmployeeByDNISuccessResponseDTO,
 } from "../dtos/EmployeeDTO";
+import { error } from "console";
 
 class EmployeeService {
   async createEmployee(
@@ -390,8 +391,44 @@ async impersonateEmployeeV2(
     return {
       success: false,
       error: {
-        code: 5008,
+        code: 50008,
         detail: "Error del sistema al impersonar el empleado",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async stopImpersonationEmployeeV2(
+  id: number,
+  userId: number,
+  ip: string
+): Promise<DeleteEmployeeSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+    inIdEmpleado: [String(id), TYPES.Int],
+  };
+
+  try {
+    console.log("s")
+    const response = await execute("sp_terminar_impersonar_empleado", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        message: "Impersonación terminada exitosamente",
+        data: {},
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {  
+    return {
+      success: false,
+      error: {
+        code: 50008,
+        detail: "Error del sistema al terminar la impersonación",
       },
       timestamp: new Date().toISOString(),
     };
