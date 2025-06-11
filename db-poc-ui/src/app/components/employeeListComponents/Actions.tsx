@@ -8,7 +8,6 @@ interface ActionsProps {
     nombre: string;
     documento: string;
     nombrePuesto: string;
-    saldoVacaciones: number;
   };
   handleDelete: (id: number) => void;
   handleQuery: (empleado: {
@@ -16,38 +15,35 @@ interface ActionsProps {
     nombre: string;
     documento: string;
     nombrePuesto: string;
-    saldoVacaciones: number;
   }) => void;
   handleEdit: (empleado: {
     id: number;
     nombre: string;
     documento: string;
     nombrePuesto: string;
-    saldoVacaciones: number;
   }) => void;
   handleMovementList: (empleado: {
     id: number;
     nombre: string;
     documento: string;
     nombrePuesto: string;
-    saldoVacaciones: number;
   }) => void;
   handleInsertMovement: (empleado: {
     id: number;
     nombre: string;
     documento: string;
     nombrePuesto: string;
-    saldoVacaciones: number;
-  }) => void;
-  handleRequestVacation: (empleado: {
-    id: number;
-    nombre: string;
-    documento: string;
-    saldoVacaciones: number;
   }) => void;
 }
 
-const Actions: React.FC<ActionsProps> = ({ empleado, handleDelete, handleQuery, handleEdit, handleMovementList, handleInsertMovement,handleRequestVacation }) => {
+const Actions: React.FC<ActionsProps> = ({
+  empleado,
+  handleDelete,
+  handleQuery,
+  handleEdit,
+  handleMovementList,
+  handleInsertMovement,
+}) => {
   return (
     <>
       <button className="button_actions" onClick={() => handleQuery(empleado)}>
@@ -63,13 +59,6 @@ const Actions: React.FC<ActionsProps> = ({ empleado, handleDelete, handleQuery, 
         Insertar Movimientos
       </button>
       <button className="button_actions" onClick={() => handleDelete(empleado.id)}>Eliminar</button>
-      <button 
-        className="button_actions"
-        onClick={() => handleRequestVacation(empleado)}
-      >
-        Solicitar Vacaciones
-      </button>
-      <button onClick={() => handleDelete(empleado.id)}>Eliminar</button>
     </>
   );
 };

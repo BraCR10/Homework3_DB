@@ -9,7 +9,6 @@ interface EditEmployeeModalProps {
     nombre: string;
     documento: string;
     nombrePuesto: string;
-    saldoVacaciones: number;
   };
   onClose: () => void;
   onSubmit: (updatedEmployee: {
@@ -20,28 +19,29 @@ interface EditEmployeeModalProps {
   }) => void;
 }
 
-const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ employee, onClose, onSubmit }) => {
+const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
+  employee,
+  onClose,
+  onSubmit,
+}) => {
   const [documento, setDocumento] = useState(employee.documento);
   const [nombre, setNombre] = useState(employee.nombre);
   const [nombrePuesto, setNombrePuesto] = useState(employee.nombrePuesto);
   const [mensaje, setMensaje] = useState("");
   const [puestos, setPuestos] = useState<{ Id: number; Nombre: string }[]>([]);
 
-  // Obtener los puestos desde la API al montar el componente
   useEffect(() => {
     const fetchPuestos = async () => {
       try {
         const response = await fetch(`${url}/api/v2/position`);
         if (response.ok) {
           const data = await response.json();
-          setPuestos(data.data.puestos); // Guardar los puestos en el estado
-        } 
-        else {
+          setPuestos(data.data.puestos);
+        } else {
           console.error("Error al obtener los puestos:", response.status);
           alert("No se pudieron cargar los puestos. Inténtalo de nuevo.");
         }
-      } 
-      catch (error) {
+      } catch (error) {
         console.error("Error al realizar la solicitud:", error);
         alert("Ocurrió un error al intentar cargar los puestos.");
       }
@@ -53,7 +53,6 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ employee, onClose
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validaciones
     if (!/^\d+$/.test(documento) && documento !== "") {
       setMensaje("❌ El documento de identidad debe de contener sólo números.");
       return;
@@ -62,22 +61,13 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ employee, onClose
       setMensaje("❌ El nombre del empleado debe de contener sólo caracteres y espacios.");
       return;
     }
-    /*
-    if (!nombrePuesto) {
-      setMensaje("❌ Debes seleccionar un puesto.");
-      return;
-    }
-    */
 
-    // Enviar los datos actualizados al componente padre
     onSubmit({
       id: employee.id,
       nombre,
       documento,
       nombrePuesto,
     });
-    //El modal se cierra desde EmployeeList
-    //onClose();
   };
 
   return (
