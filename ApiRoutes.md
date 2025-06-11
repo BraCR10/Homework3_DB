@@ -490,7 +490,7 @@ GET /api/v2/catalogs/deduction-types
       "Name": string,
       "IsObligatory": boolean,
       "IsPercentage": boolean,
-      "Percentage": number // Solo si IsPercentage es true
+      "Percentage": number? // Solo si IsPercentage es true
     }
   ],
   "message": string,
