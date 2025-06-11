@@ -54,7 +54,7 @@ export async function loginUser(req: Request, res: Response): Promise<void> {
       success: false,
       error: {
         code: 50008,
-        detail: "Un error a ocurrido mientras el cierre de sesion"
+        detail: "Un error a ocurrido mientras el inicio de sesion"
       },
       timestamp: new Date().toISOString()
     };
