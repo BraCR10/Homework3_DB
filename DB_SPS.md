@@ -182,6 +182,7 @@ Todos los procedimientos almacenados utilizan los siguientes parámetros comunes
 **Parámetros**:
 - `@outResultCode INT OUTPUT`: Código de resultado
 - `@IdUsuario INT`: ID del usuario
+- `@IdEmpleado INT`: ID del empleado a actualizar
 - `@IP VARCHAR(64)`: Dirección IP del cliente
 - `@Nombre VARCHAR(64)`: Nombre del empleado
 - `@IdDocTipo INT`: ID del tipo de documento
