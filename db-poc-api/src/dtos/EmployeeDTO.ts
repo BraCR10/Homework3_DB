@@ -69,6 +69,13 @@ export interface UpdateEmployeeSuccessResponseDTO {
   timestamp: string;
 } 
 
+export interface DeleteEmployeeSuccessResponseDTO {
+  success: boolean;
+  message: string;
+  data: {};
+  timestamp: string;
+}
+
 export interface CreateEmployeesDTO {
   IdPuesto: number;
   ValorDocumentoIdentidad: string;
@@ -113,12 +120,6 @@ export interface TryDeleteEmployeeSuccessResponseDTO {
 
 export interface DeleteEmployeeDTO {
   ValorDocumentoIdentidad: string;
-}
-export interface DeleteEmployeeSuccessResponseDTO {
-  success: boolean;
-  data: {
-    detail: string;
-  };
 }
 
 export interface GetEmployeeByNameDTO {
