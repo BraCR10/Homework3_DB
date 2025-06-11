@@ -9,7 +9,10 @@ import {
   impersonateEmployeeV2,
   stopImpersonationEmployeeV2,
   getDocumentTypes,
+  getPositions,
   getEmployees,
+  getDepartments,
+  getDeductionTypes,
   searchEmployees,
   getEmployeeById,
   updateEmployee,
@@ -37,6 +40,9 @@ router.delete("/employees/:id", deleteEmployeeV2);
 router.post("/employees/:id/impersonate", impersonateEmployeeV2);
 router.post("/employees/:id/stop-impersonation", stopImpersonationEmployeeV2);
 router.get("/catalogs/document-types", getDocumentTypes);
+router.get("/catalogs/positions", getPositions);
+router.get("/catalogs/departments", getDepartments);
+router.get("/catalogs/deduction-types", getDeductionTypes);
 
 
 

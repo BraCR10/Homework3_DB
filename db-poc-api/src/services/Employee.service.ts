@@ -14,6 +14,9 @@ import {
   UpdateEmployeeRequestDTO,
   UpdateEmployeeSuccessResponseDTO,
   CreateEmployeeSuccessResponseDTO,
+  GetPositionsSuccessResponseDTO,
+  GetDepartmentsSuccessResponseDTO,
+  GetDeductionTypesSuccessResponseDTO,
   UpdateEmployeesDTO,
   UpdateEmployeesSuccessResponseDTO,
   TryDeleteEmployeeDTO,
@@ -462,6 +465,105 @@ async getDocumentTypes(
       error: {
         code: 50011,
         detail: "Error del sistema al consultar tipos de documentos",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getPositions(
+  userId: number,
+  ip: string
+): Promise<GetPositionsSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+  };
+
+  try {
+    const response = await execute("sp_consultar_puestos", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50012,
+        detail: "Error del sistema al consultar puestos",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getDepartments(
+  userId: number,
+  ip: string
+): Promise<GetDepartmentsSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+  };
+
+  try {
+    const response = await execute("sp_consultar_departamentos", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50013,
+        detail: "Error del sistema al consultar departamentos",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getDeductionTypes(
+  userId: number,
+  ip: string
+): Promise<GetDeductionTypesSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+  };
+
+  try {
+    const response = await execute("sp_consultar_tipos_deducciones", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50014,
+        detail: "Error del sistema al consultar tipos de deducciones",
       },
       timestamp: new Date().toISOString(),
     };

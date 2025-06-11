@@ -508,6 +508,117 @@ export const getDocumentTypes = async (
   }
 };
 
+export const getPositions = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.getPositions(userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50012,
+        detail: "Error del sistema al consultar puestos",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const getDepartments = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.getDepartments(userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50013,
+        detail: "Error del sistema al consultar departamentos",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const getDeductionTypes = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.getDeductionTypes(userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50014,
+        detail: "Error del sistema al consultar tipos de deducciones",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
 /*
 export const getEmployeeById = async (
   req: Request,

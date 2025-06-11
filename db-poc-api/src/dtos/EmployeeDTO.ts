@@ -133,6 +133,40 @@ export interface ImpersonateEmployeeSuccessResponseDTO {
   timestamp: string;
 }
 
+export interface GetPositionsSuccessResponseDTO {
+  success: boolean;
+  data: {
+    Id: number;
+    Name: string;
+    HourlySalary: number;
+  }[];
+  message: string;
+  timestamp: string;
+}
+
+export interface GetDepartmentsSuccessResponseDTO {
+  success: boolean;
+  data: {
+    Id: number;
+    Name: string;
+  }[];
+  message: string;
+  timestamp: string;
+}
+
+export interface GetDeductionTypesSuccessResponseDTO {
+  success: boolean;
+  data: {
+    Id: number;
+    Name: string;
+    IsObligatory: boolean;
+    IsPercentage: boolean;
+    Percentage?: number;
+  }[];
+  message: string;
+  timestamp: string;
+}
+
 export interface GetDocumentTypesSuccessResponseDTO {
   success: boolean;
   data: {
