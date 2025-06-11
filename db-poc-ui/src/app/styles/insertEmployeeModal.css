@@ -1,0 +1,97 @@
+/* Modal específico para insertar empleado */
+.insert-employee-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Fondo oscuro con opacidad */
+  backdrop-filter: blur(5px); /* Efecto de desenfoque */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Asegura que el modal esté por encima de otros elementos */
+}
+
+.insert-employee-modal-content {
+  background-color: #1a1a1a; /* Fondo oscuro */
+  padding: 20px; /* Espaciado interno */
+  border-radius: 8px; /* Bordes redondeados */
+  text-align: center; /* Centrado del texto */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destacar el modal */
+  width: 90%; /* Ajusta el ancho del modal */
+  max-width: 1200px; /* Limita el ancho máximo */
+  color: #e0e0e0; /* Texto claro */
+}
+
+/* Formulario */
+.insert-employee-form {
+  display: flex;
+  flex-wrap: wrap; /* Permite que los campos se ajusten automáticamente */
+  gap: 20px; /* Espaciado entre los campos */
+  justify-content: space-between; /* Distribuye los campos horizontalmente */
+}
+
+/* Grupos de formulario */
+.insert-employee-form-group {
+  flex: 1 1 calc(50% - 20px); /* Cada campo ocupa el 50% del ancho disponible */
+  min-width: 300px; /* Ancho mínimo para los campos */
+}
+
+.insert-employee-form-group label {
+  display: block; /* Asegura que el texto del label esté en su propia línea */
+  font-weight: bold; /* Negrita para el texto del label */
+  margin-bottom: 5px; /* Espaciado entre el label y el campo */
+}
+
+.insert-employee-form-group input,
+.insert-employee-form-group select {
+  width: 100%; /* Ocupa todo el ancho disponible */
+  padding: 8px; /* Espaciado interno */
+  border: 1px solid #ccc; /* Borde tenue */
+  border-radius: 4px; /* Bordes redondeados */
+}
+
+/* Botones */
+.insert-employee-form-buttons {
+  display: flex; /* Alinea los botones horizontalmente */
+  justify-content: space-between; /* Espaciado entre los botones */
+  margin-top: 20px; /* Espaciado superior */
+}
+
+.insert-employee-confirm-button {
+  background-color: #28a745; /* Verde brillante */
+  color: white; /* Texto blanco */
+  border: none; /* Sin borde */
+  padding: 10px 20px; /* Espaciado interno */
+  border-radius: 4px; /* Bordes redondeados */
+  cursor: pointer; /* Cambia el cursor al pasar el mouse */
+  transition: background-color 0.3s ease; /* Transición suave */
+}
+
+.insert-employee-confirm-button:hover {
+  background-color: #218838; /* Verde más oscuro al pasar el mouse */
+}
+
+.insert-employee-cancel-button {
+  background-color: #dc3545; /* Rojo brillante */
+  color: white; /* Texto blanco */
+  border: none; /* Sin borde */
+  padding: 10px 20px; /* Espaciado interno */
+  border-radius: 4px; /* Bordes redondeados */
+  cursor: pointer; /* Cambia el cursor al pasar el mouse */
+  transition: background-color 0.3s ease; /* Transición suave */
+}
+
+.insert-employee-cancel-button:hover {
+  background-color: #c82333; /* Rojo más oscuro al pasar el mouse */
+}
+
+/* Mensaje de error */
+.insert-employee-error-message {
+  margin-top: 15px; /* Espaciado superior */
+  margin-bottom: 10px; /* Espaciado inferior */
+  text-align: center; /* Centrado del texto */
+  font-weight: bold; /* Negrita para el texto */
+  color: #cf6679; /* Rojo claro para mensajes de error */
+}

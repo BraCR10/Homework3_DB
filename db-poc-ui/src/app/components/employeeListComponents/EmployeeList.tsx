@@ -4,7 +4,9 @@ import React, { useState, useEffect } from "react";
 import FilterBar from "./FilterBar";
 import EmployeeTable from "./EmployeeTable";
 import "../../styles/employee.css";
+import "../../styles/insertEmployeeModal.css";
 import EditEmployeeModal from "./EditEmployeeModal";
+import InsertEmployeeModal from "./InsertEmployeeModal";
 import { useRouter } from "next/navigation";
 
 const url: string = "http://localhost:3050";
@@ -44,6 +46,7 @@ const EmployeeList = () => {
   const [filtro, setFiltro] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState<Empleado | null>(null);
   const [editEmployeeModalVisible, setEditEmployeeModalVisible] = useState(false);
+  const [insertEmployeeModalVisible, setInsertEmployeeModalVisible] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -128,6 +131,48 @@ const EmployeeList = () => {
     }
   };
 
+  const handleInsertEmployee = async (newEmployee: {
+    Name: string;
+    NameUser: string;
+    PasswordUser: string;
+    DocumentTypeId: number;
+    DateBirth?: string;
+    DocumentValue: string;
+    PositionId: number;
+    DepartmentId: number;
+  }) => {
+    try {
+      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+      if (!usuarioGuardado.Id) {
+        console.error("No se encontró un usuario logueado.");
+        alert("No se encontró un usuario logueado.");
+        return;
+      }
+
+      const response = await fetch(`${url}/api/v2/employees`, {
+        method: "POST",
+        headers: {
+          "User-Id": usuarioGuardado.Id.toString(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newEmployee),
+      });
+
+      if (response.ok) {
+        alert("✅ Empleado creado exitosamente.");
+        fetchEmpleados(); // Refrescar la lista de empleados
+        setInsertEmployeeModalVisible(false);
+      } else {
+        const errorData: BackendErrorResponse = await response.json();
+        console.error("Error al insertar empleado:", errorData.error.detail);
+        alert(`Error: ${errorData.error.detail}`);
+      }
+    } catch (error) {
+      console.error("Error al realizar la solicitud:", error);
+      alert("Ocurrió un error al intentar insertar el empleado.");
+    }
+  };
+
   const handleEdit = (empleado: Empleado) => {
     setSelectedEmployee(empleado);
     setEditEmployeeModalVisible(true);
@@ -154,6 +199,15 @@ const EmployeeList = () => {
       <h2>Panel de Administración - Lista de Empleados</h2>
       <div className="filtro-container">
         <FilterBar filtro={filtro} setFiltro={setFiltro} aplicarFiltro={aplicarFiltro} />
+        <button
+          onClick={() => {
+            console.log("Insertar Empleado presionado");
+            setInsertEmployeeModalVisible(true);
+          }}
+          className="insertar-boton"
+        >
+          Insertar Empleado
+        </button>
         <button onClick={() => router.push("/stats")} className="insertar-boton">
           Ver estadísticas
         </button>
@@ -185,6 +239,12 @@ const EmployeeList = () => {
             fetchEmpleados();
             setEditEmployeeModalVisible(false);
           }}
+        />
+      )}
+      {insertEmployeeModalVisible && (
+        <InsertEmployeeModal
+          onClose={() => setInsertEmployeeModalVisible(false)}
+          onSubmit={handleInsertEmployee}
         />
       )}
     </div>
