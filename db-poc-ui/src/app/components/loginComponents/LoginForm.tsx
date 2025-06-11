@@ -10,7 +10,7 @@ const LoginForm = () => {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mensaje, setMensaje] = useState('');
-  const router = useRouter(); // Inicializar el router
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,9 +37,9 @@ const LoginForm = () => {
           }));
           const role = data.data.loginStatus.Role;
           if (role === "Administrador") {
-            router.push("/employee");
+            router.push("/employee"); // Redirige al panel de empleados
           } else if (role === "Empleado") {
-            router.push("/payroll");
+            router.push("/payroll"); // Redirige al panel de nómina
           }
         } else {
           setMensaje('❌ Respuesta inesperada del servidor');
