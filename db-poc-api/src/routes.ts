@@ -4,6 +4,7 @@ const router = Router();
 import {
   createEmployee,
   createEmployeeV2,
+  updateEmployeeV2,
   getEmployees,
   searchEmployees,
   getEmployeeById,
@@ -22,11 +23,14 @@ router.get("/health", (_req, res) => {
 router.post("/logout", logoutUser);
 router.post("/login", loginUser);
 
+
 // Employee routes
 router.get("/employees", getEmployees);
 router.get("/employees/search", searchEmployees);
 router.get("/employees/:id", getEmployeeById);
 router.post("/employees", createEmployeeV2);
+router.put("/employees/:id", updateEmployeeV2);
+
 
 
 

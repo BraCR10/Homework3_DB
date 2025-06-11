@@ -50,6 +50,25 @@ export interface CreateEmployeeSuccessResponseDTO {
   timestamp: string;
 }
 
+export interface UpdateEmployeeRequestDTO {
+  Name?: string;
+  DocumentTypeId?: number;
+  DateBirth?: Date;
+  DocumentValue?: string;
+  PositionId?: number;
+  DepartmentId?: number;
+}
+
+export interface UpdateEmployeeSuccessResponseDTO {
+  success: boolean;
+  message: string;
+  data: {
+    Id: number;
+    Name: string;
+  };
+  timestamp: string;
+} 
+
 export interface CreateEmployeesDTO {
   IdPuesto: number;
   ValorDocumentoIdentidad: string;

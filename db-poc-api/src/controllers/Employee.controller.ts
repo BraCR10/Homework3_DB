@@ -7,6 +7,8 @@ import {
   CreateEmployeeRequestDTO,
   CreateEmployeeSuccessResponseDTO,
   EmployeesErrorResponseDTO,
+  UpdateEmployeeRequestDTO,
+  UpdateEmployeeSuccessResponseDTO,
   TryDeleteEmployeeDTO,
   DeleteEmployeeDTO,
   GetEmployeeByNameDTO,
@@ -263,6 +265,58 @@ export const createEmployeeV2 = async (
       error: {
         code: 50008,
         detail: "Error del sistema creando el empleado",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const updateEmployeeV2 = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!id || isNaN(id)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "ID de empleado es requerido y debe ser numérico."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const data: UpdateEmployeeRequestDTO = req.body;
+
+    const response = await EmployeeService.updateEmployeeV2(id, data, userId, ip);
+
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50008,
+        detail: "Error del sistema actualizando el empleado",
       },
       timestamp: new Date().toISOString(),
     });
