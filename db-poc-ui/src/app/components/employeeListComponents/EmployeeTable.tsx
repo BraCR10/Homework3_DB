@@ -8,32 +8,27 @@ interface EmployeeTableProps {
   empleados: {
     id: number;
     nombre: string;
-    documento: string;
     nombrePuesto: string;
   }[];
   handleEdit: (empleado: {
     id: number;
     nombre: string;
-    documento: string;
     nombrePuesto: string;
   }) => void;
   handleDelete: (id: number) => void;
   handleQuery: (empleado: {
     id: number;
     nombre: string;
-    documento: string;
     nombrePuesto: string;
   }) => void;
   handleMovementList: (empleado: {
     id: number;
     nombre: string;
-    documento: string;
     nombrePuesto: string;
   }) => void;
   handleInsertMovement: (empleado: {
     id: number;
     nombre: string;
-    documento: string;
     nombrePuesto: string;
   }) => void;
 }
@@ -51,7 +46,6 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
       <thead>
         <tr>
           <th>Nombre</th>
-          <th>Documento</th>
           <th>Puesto</th>
           <th>Acciones</th>
         </tr>

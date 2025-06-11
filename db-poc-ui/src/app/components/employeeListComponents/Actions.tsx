@@ -1,37 +1,32 @@
 "use client";
 
-import React from 'react';
+import React from "react";
 
 interface ActionsProps {
   empleado: {
     id: number;
     nombre: string;
-    documento: string;
     nombrePuesto: string;
   };
   handleDelete: (id: number) => void;
   handleQuery: (empleado: {
     id: number;
     nombre: string;
-    documento: string;
     nombrePuesto: string;
   }) => void;
   handleEdit: (empleado: {
     id: number;
     nombre: string;
-    documento: string;
     nombrePuesto: string;
   }) => void;
   handleMovementList: (empleado: {
     id: number;
     nombre: string;
-    documento: string;
     nombrePuesto: string;
   }) => void;
   handleInsertMovement: (empleado: {
     id: number;
     nombre: string;
-    documento: string;
     nombrePuesto: string;
   }) => void;
 }
@@ -62,5 +57,4 @@ const Actions: React.FC<ActionsProps> = ({
     </>
   );
 };
-
 export default Actions;

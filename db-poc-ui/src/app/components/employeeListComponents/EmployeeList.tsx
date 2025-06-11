@@ -13,7 +13,6 @@ const url: string = "http://localhost:3050";
 interface BackendEmployee {
   Id: number;
   Name: string;
-  Document: string;
   Position: string;
 }
 
@@ -37,7 +36,6 @@ interface BackendErrorResponse {
 interface Empleado {
   id: number;
   nombre: string;
-  documento: string;
   nombrePuesto: string;
 }
 
@@ -55,6 +53,8 @@ const EmployeeList = () => {
   const fetchEmpleados = async () => {
     try {
       const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+      console.log("Usuario guardado en localStorage:", usuarioGuardado);
+
       if (!usuarioGuardado.Id) {
         console.error("No se encontró un usuario logueado.");
         alert("No se encontró un usuario logueado.");
@@ -71,12 +71,13 @@ const EmployeeList = () => {
 
       if (response.ok) {
         const data: BackendEmployeeResponse = await response.json();
-        const empleadosBackend: Empleado[] = data.data.map((empleado: BackendEmployee) => ({
-          id: empleado.Id,
-          nombre: empleado.Name,
-          documento: empleado.Document,
-          nombrePuesto: empleado.Position,
-        }));
+        const empleadosBackend: Empleado[] = data.data
+          .map((empleado: BackendEmployee) => ({
+            id: empleado.Id,
+            nombre: empleado.Name,
+            nombrePuesto: empleado.Position,
+          }))
+          .sort((a, b) => a.nombre.localeCompare(b.nombre)); // Ordenar alfabéticamente por nombre
         setEmpleados(empleadosBackend);
       } else {
         const errorData: BackendErrorResponse = await response.json();
@@ -108,12 +109,13 @@ const EmployeeList = () => {
 
       if (response.ok) {
         const data: BackendEmployeeResponse = await response.json();
-        const empleadosFiltrados: Empleado[] = data.data.map((empleado: BackendEmployee) => ({
-          id: empleado.Id,
-          nombre: empleado.Name,
-          documento: empleado.Document,
-          nombrePuesto: empleado.Position,
-        }));
+        const empleadosFiltrados: Empleado[] = data.data
+          .map((empleado: BackendEmployee) => ({
+            id: empleado.Id,
+            nombre: empleado.Name,
+            nombrePuesto: empleado.Position,
+          }))
+          .sort((a, b) => a.nombre.localeCompare(b.nombre)); // Ordenar alfabéticamente por nombre
         setEmpleados(empleadosFiltrados);
       } else {
         const errorData: BackendErrorResponse = await response.json();
