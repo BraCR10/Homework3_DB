@@ -11,6 +11,8 @@ import {
   CreateEmployeesDTO,
   EmployeesErrorResponseDTO,
   CreateEmployeeRequestDTO,
+  UpdateEmployeeRequestDTO,
+  UpdateEmployeeSuccessResponseDTO,
   CreateEmployeeSuccessResponseDTO,
   UpdateEmployeesDTO,
   UpdateEmployeesSuccessResponseDTO,
@@ -205,6 +207,9 @@ async createEmployeeV2(
   userId: number,
   ip: string
 ): Promise<CreateEmployeeSuccessResponseDTO | EmployeesErrorResponseDTO> {
+  if (!data.DateBirth) {
+    throw new Error("DateBirth es requerido");
+  }
   const params: inSqlParameters = {
     inIdUsuario: [String(userId), TYPES.Int],
     inIP: [ip, TYPES.VarChar],
@@ -214,11 +219,7 @@ async createEmployeeV2(
     inIdDocTipo: [String(data.DocumentTypeId), TYPES.Int],
     inValorDoc: [data.DocumentValue, TYPES.VarChar],
     inFechaNacimiento: [
-      data.DateBirth
-        ? (typeof data.DateBirth === "string"
-            ? new Date(data.DateBirth).toISOString().slice(0, 10)
-            : data.DateBirth.toISOString().slice(0, 10))
-        : "",
+      data.DateBirth.toISOString().slice(0, 10),
       TYPES.DateTime
     ],
     inIdPuesto: [String(data.PositionId), TYPES.Int],
@@ -257,6 +258,56 @@ async createEmployeeV2(
       error: {
         code: 50008,
         detail: "Error del sistema creando el empleado",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async updateEmployeeV2(
+  id: number,
+  data: UpdateEmployeeRequestDTO,
+  userId: number,
+  ip: string
+): Promise<UpdateEmployeeSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+    inIdEmpleado: [String(id), TYPES.Int],
+    inNombre: [data.Name ?? null, TYPES.VarChar],
+    inIdDocTipo: [data.DocumentTypeId !== null ? String(data.DocumentTypeId) : null, TYPES.Int],
+    inValorDoc: [data.DocumentValue ?? null, TYPES.VarChar],
+    inFechaNacimiento: [
+      data.DateBirth ? data.DateBirth.toISOString().slice(0, 10) : null,
+      TYPES.DateTime
+    ],
+    inIdPuesto: [data.PositionId !== null ? String(data.PositionId) : null, TYPES.Int],
+    inIdDepartamento: [data.DepartmentId !== null ? String(data.DepartmentId) : null, TYPES.Int],
+  };
+
+  try {
+    console.log(params)
+    const response = await execute("sp_actualizar_empleado", params, {});
+    if (response.output.outResultCode == 0 && response.recordset.length > 0) {
+      const emp = response.recordset[0];
+      return {
+        success: true,
+        message: "Empleado actualizado exitosamente",
+        data: {
+          Id: emp.Id,
+          Name: emp.Name,
+        },
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50008,
+        detail: "Error del sistema actualizando el empleado",
       },
       timestamp: new Date().toISOString(),
     };
