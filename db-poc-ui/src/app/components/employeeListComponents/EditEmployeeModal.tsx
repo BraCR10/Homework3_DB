@@ -42,36 +42,36 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
   const [tiposIdentificacion, setTiposIdentificacion] = useState<{ Id: number; Nombre: string }[]>([]);
 
   useEffect(() => {
-  const fetchCatalogs = async () => {
-    try {
-      const [puestosResponse, departamentosResponse, tiposIdentificacionResponse] = await Promise.all([
-        fetch(`${url}/api/v2/catalogs/positions`),
-        fetch(`${url}/api/v2/catalogs/departments`),
-        fetch(`${url}/api/v2/catalogs/document-types`),
-      ]);
+    const fetchCatalogs = async () => {
+      try {
+        const [puestosResponse, departamentosResponse, tiposIdentificacionResponse] = await Promise.all([
+          fetch(`${url}/api/v2/catalogs/positions`),
+          fetch(`${url}/api/v2/catalogs/departments`),
+          fetch(`${url}/api/v2/catalogs/document-types`),
+        ]);
 
-      if (puestosResponse.ok) {
-        const puestosData = await puestosResponse.json();
-        setPuestos(puestosData.data || []); // Manejar caso de datos vacíos
+        if (puestosResponse.ok) {
+          const puestosData = await puestosResponse.json();
+          setPuestos(puestosData.data || []);
+        }
+
+        if (departamentosResponse.ok) {
+          const departamentosData = await departamentosResponse.json();
+          setDepartamentos(departamentosData.data || []);
+        }
+
+        if (tiposIdentificacionResponse.ok) {
+          const tiposIdentificacionData = await tiposIdentificacionResponse.json();
+          setTiposIdentificacion(tiposIdentificacionData.data || []);
+        }
+      } catch (error) {
+        console.error("Error al cargar los catálogos:", error);
+        alert("Ocurrió un error al intentar cargar los catálogos.");
       }
+    };
 
-      if (departamentosResponse.ok) {
-        const departamentosData = await departamentosResponse.json();
-        setDepartamentos(departamentosData.data || []); // Manejar caso de datos vacíos
-      }
-
-      if (tiposIdentificacionResponse.ok) {
-        const tiposIdentificacionData = await tiposIdentificacionResponse.json();
-        setTiposIdentificacion(tiposIdentificacionData.data || []); // Manejar caso de datos vacíos
-      }
-    } catch (error) {
-      console.error("Error al cargar los catálogos:", error);
-      alert("Ocurrió un error al intentar cargar los catálogos.");
-    }
-  };
-
-  fetchCatalogs();
-}, []);
+    fetchCatalogs();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,7 +98,6 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
       });
 
       if (response.ok) {
-        //const data = await response.json();
         alert("✅ Empleado actualizado exitosamente.");
         onSubmit({
           id: employee.id,

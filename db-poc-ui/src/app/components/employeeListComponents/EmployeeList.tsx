@@ -7,7 +7,7 @@ import "../../styles/employee.css";
 import "../../styles/insertEmployeeModal.css";
 import EditEmployeeModal from "./EditEmployeeModal";
 import InsertEmployeeModal from "./InsertEmployeeModal";
-import DeleteConfirmationModal from "./DeleteConfirmationModal"; // Importar el modal de confirmación
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { useRouter } from "next/navigation";
 
 const url: string = "http://localhost:3050";
@@ -48,8 +48,8 @@ const EmployeeList = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Empleado | null>(null);
   const [editEmployeeModalVisible, setEditEmployeeModalVisible] = useState(false);
   const [insertEmployeeModalVisible, setInsertEmployeeModalVisible] = useState(false);
-  const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false); // Estado para el modal de confirmación
-  const [employeeToDelete, setEmployeeToDelete] = useState<number | null>(null); // ID del empleado a eliminar
+  const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -59,8 +59,6 @@ const EmployeeList = () => {
   const fetchEmpleados = async () => {
     try {
       const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
-      console.log("Usuario guardado en localStorage:", usuarioGuardado);
-
       if (!usuarioGuardado.Id) {
         console.error("No se encontró un usuario logueado.");
         alert("No se encontró un usuario logueado.");
@@ -83,7 +81,7 @@ const EmployeeList = () => {
             nombre: empleado.Name,
             nombrePuesto: empleado.Position,
           }))
-          .sort((a, b) => a.nombre.localeCompare(b.nombre)); // Ordenar alfabéticamente por nombre
+          .sort((a, b) => a.nombre.localeCompare(b.nombre));
         setEmpleados(empleadosBackend);
       } else {
         const errorData: BackendErrorResponse = await response.json();
@@ -121,7 +119,7 @@ const EmployeeList = () => {
             nombre: empleado.Name,
             nombrePuesto: empleado.Position,
           }))
-          .sort((a, b) => a.nombre.localeCompare(b.nombre)); // Ordenar alfabéticamente por nombre
+          .sort((a, b) => a.nombre.localeCompare(b.nombre));
         setEmpleados(empleadosFiltrados);
       } else {
         const errorData: BackendErrorResponse = await response.json();
@@ -163,7 +161,7 @@ const EmployeeList = () => {
 
       if (response.ok) {
         alert("✅ Empleado creado exitosamente.");
-        fetchEmpleados(); // Refrescar la lista de empleados
+        fetchEmpleados();
         setInsertEmployeeModalVisible(false);
       } else {
         const errorData: BackendErrorResponse = await response.json();
@@ -200,24 +198,15 @@ const EmployeeList = () => {
         },
       });
 
-      console.log("Respuesta del servidor:", response);
-
       if (response.ok) {
         alert("✅ Empleado eliminado exitosamente.");
-        fetchEmpleados(); // Refrescar la lista de empleados
+        fetchEmpleados();
         setDeleteConfirmationVisible(false);
         setEmployeeToDelete(null);
       } else {
-        const contentType = response.headers.get("Content-Type");
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await response.json();
-          console.error("Error al eliminar empleado:", errorData.error.detail);
-          alert(`Error: ${errorData.error.detail}`);
-        } else {
-          const errorText = await response.text();
-          console.error("Error inesperado:", errorText);
-          alert("Ocurrió un error inesperado al intentar eliminar el empleado.");
-        }
+        const errorData = await response.json();
+        console.error("Error al eliminar empleado:", errorData.error.detail);
+        alert(`Error: ${errorData.error.detail}`);
       }
     } catch (error) {
       console.error("Error al realizar la solicitud:", error);
@@ -242,16 +231,17 @@ const EmployeeList = () => {
     console.log("Insertar movimiento para el empleado:", empleado);
   };
 
+  const handleImpersonate = (id: number) => {
+    console.log("Impersonar empleado con ID:", id);
+  };
+
   return (
     <div className="listar-empleados-container">
       <h2>Panel de Administración - Lista de Empleados</h2>
       <div className="filtro-container">
         <FilterBar filtro={filtro} setFiltro={setFiltro} aplicarFiltro={aplicarFiltro} />
         <button
-          onClick={() => {
-            console.log("Insertar Empleado presionado");
-            setInsertEmployeeModalVisible(true);
-          }}
+          onClick={() => setInsertEmployeeModalVisible(true)}
           className="insertar-boton"
         >
           Insertar Empleado
@@ -272,27 +262,26 @@ const EmployeeList = () => {
       <EmployeeTable
         empleados={empleados}
         handleEdit={handleEdit}
-        handleDelete={confirmDelete} // Conectar el botón de eliminar
+        handleDelete={confirmDelete}
         handleQuery={handleQuery}
         handleMovementList={handleMovementList}
         handleInsertMovement={handleInsertMovement}
+        handleImpersonate={handleImpersonate}
       />
-      {empleados.length === 0 && <p>No se encontraron empleados.</p>}
+      {insertEmployeeModalVisible && (
+        <InsertEmployeeModal
+          onClose={() => setInsertEmployeeModalVisible(false)}
+          onSubmit={handleInsertEmployee}
+        />
+      )}
       {editEmployeeModalVisible && selectedEmployee && (
         <EditEmployeeModal
           employee={selectedEmployee}
           onClose={() => setEditEmployeeModalVisible(false)}
           onSubmit={(updatedEmployee) => {
             console.log("Empleado actualizado:", updatedEmployee);
-            fetchEmpleados();
             setEditEmployeeModalVisible(false);
           }}
-        />
-      )}
-      {insertEmployeeModalVisible && (
-        <InsertEmployeeModal
-          onClose={() => setInsertEmployeeModalVisible(false)}
-          onSubmit={handleInsertEmployee}
         />
       )}
       {deleteConfirmationVisible && (

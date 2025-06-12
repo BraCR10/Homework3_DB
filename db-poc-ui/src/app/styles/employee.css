@@ -257,3 +257,18 @@
   font-weight: bold;
   color: #cf6679; /* Mensaje de error en rojo claro */
 }
+
+/* Botón de impersonar */
+.impersonar-boton {
+  background-color: #007bff; /* Azul brillante */
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.impersonar-boton:hover {
+  background-color: #0056b3; /* Azul más oscuro */
+}

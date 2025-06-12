@@ -1,32 +1,32 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 const url: string = "http://localhost:3050";
 
 interface InsertEmployeeModalProps {
   onClose: () => void;
-  onSubmit: (empleado: { 
-    Name: string; 
-    NameUser: string; 
-    PasswordUser: string; 
-    DocumentTypeId: number; 
-    DateBirth?: string; 
-    DocumentValue: string; 
-    PositionId: number; 
-    DepartmentId: number; 
+  onSubmit: (empleado: {
+    Name: string;
+    NameUser: string;
+    PasswordUser: string;
+    DocumentTypeId: number;
+    DateBirth?: string;
+    DocumentValue: string;
+    PositionId: number;
+    DepartmentId: number;
   }) => void;
 }
 
 const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSubmit }) => {
-  const [name, setName] = useState('');
-  const [nameUser, setNameUser] = useState('');
-  const [passwordUser, setPasswordUser] = useState('');
+  const [name, setName] = useState("");
+  const [nameUser, setNameUser] = useState("");
+  const [passwordUser, setPasswordUser] = useState("");
   const [documentTypeId, setDocumentTypeId] = useState<number | null>(null);
-  const [documentValue, setDocumentValue] = useState('');
-  const [dateBirth, setDateBirth] = useState('');
+  const [documentValue, setDocumentValue] = useState("");
+  const [dateBirth, setDateBirth] = useState("");
   const [positionId, setPositionId] = useState<number | null>(null);
   const [departmentId, setDepartmentId] = useState<number | null>(null);
-  const [mensaje, setMensaje] = useState('');
+  const [mensaje, setMensaje] = useState("");
   const [positions, setPositions] = useState<{ Id: number; Nombre: string }[]>([]);
   const [departments, setDepartments] = useState<{ Id: number; Nombre: string }[]>([]);
   const [documentTypes, setDocumentTypes] = useState<{ Id: number; Nombre: string }[]>([]);
@@ -35,28 +35,34 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
     const fetchCatalogs = async () => {
       try {
         const [positionsResponse, departmentsResponse, documentTypesResponse] = await Promise.all([
-          fetch(`${url}/api/v2/catalogs/positions`),
-          fetch(`${url}/api/v2/catalogs/departments`),
-          fetch(`${url}/api/v2/catalogs/document-types`),
+          fetch(`${url}/api/v2/catalogs/positions`, { method: "GET", headers: { "Content-Type": "application/json" } }),
+          fetch(`${url}/api/v2/catalogs/departments`, { method: "GET", headers: { "Content-Type": "application/json" } }),
+          fetch(`${url}/api/v2/catalogs/document-types`, { method: "GET", headers: { "Content-Type": "application/json" } }),
         ]);
 
         if (positionsResponse.ok) {
           const positionsData = await positionsResponse.json();
           setPositions(positionsData.data || []);
+        } else {
+          console.error("Error al obtener puestos:", positionsResponse.status);
         }
 
         if (departmentsResponse.ok) {
           const departmentsData = await departmentsResponse.json();
           setDepartments(departmentsData.data || []);
+        } else {
+          console.error("Error al obtener departamentos:", departmentsResponse.status);
         }
 
         if (documentTypesResponse.ok) {
           const documentTypesData = await documentTypesResponse.json();
           setDocumentTypes(documentTypesData.data || []);
+        } else {
+          console.error("Error al obtener tipos de identificación:", documentTypesResponse.status);
         }
       } catch (error) {
         console.error("Error al cargar los catálogos:", error);
-        alert('Ocurrió un error al intentar cargar los catálogos.');
+        alert("Ocurrió un error al intentar cargar los catálogos.");
       }
     };
 
@@ -125,7 +131,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
-                setMensaje('');
+                setMensaje("");
               }}
               required
             />
@@ -137,7 +143,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
               value={nameUser}
               onChange={(e) => {
                 setNameUser(e.target.value);
-                setMensaje('');
+                setMensaje("");
               }}
               required
             />
@@ -149,7 +155,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
               value={passwordUser}
               onChange={(e) => {
                 setPasswordUser(e.target.value);
-                setMensaje('');
+                setMensaje("");
               }}
               required
             />
@@ -160,7 +166,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
               value={documentTypeId || ""}
               onChange={(e) => {
                 setDocumentTypeId(Number(e.target.value));
-                setMensaje('');
+                setMensaje("");
               }}
               required
             >
@@ -179,7 +185,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
               value={documentValue}
               onChange={(e) => {
                 setDocumentValue(e.target.value);
-                setMensaje('');
+                setMensaje("");
               }}
               required
             />
@@ -191,7 +197,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
               value={dateBirth}
               onChange={(e) => {
                 setDateBirth(e.target.value);
-                setMensaje('');
+                setMensaje("");
               }}
             />
           </div>
@@ -201,7 +207,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
               value={positionId || ""}
               onChange={(e) => {
                 setPositionId(Number(e.target.value));
-                setMensaje('');
+                setMensaje("");
               }}
               required
             >
@@ -219,7 +225,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
               value={departmentId || ""}
               onChange={(e) => {
                 setDepartmentId(Number(e.target.value));
-                setMensaje('');
+                setMensaje("");
               }}
               required
             >
@@ -233,8 +239,12 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
           </div>
           {mensaje && <p className="insert-employee-error-message">{mensaje}</p>}
           <div className="insert-employee-form-buttons">
-            <button type="submit" className="insert-employee-confirm-button">Insertar</button>
-            <button type="button" onClick={onClose} className="insert-employee-cancel-button">Cancelar</button>
+            <button type="submit" className="insert-employee-confirm-button">
+              Insertar
+            </button>
+            <button type="button" onClick={onClose} className="insert-employee-cancel-button">
+              Cancelar
+            </button>
           </div>
         </form>
       </div>
