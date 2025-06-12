@@ -5,11 +5,17 @@ import {
   createEmployee,
   createEmployeeV2,
   updateEmployeeV2,
+  deleteEmployeeV2,
+  impersonateEmployeeV2,
+  stopImpersonationEmployeeV2,
+  getDocumentTypes,
+  getPositions,
   getEmployees,
+  getDepartments,
+  getDeductionTypes,
   searchEmployees,
   getEmployeeById,
   updateEmployee,
-  deleteEmployee,
   tryDeleteEmployee,
   getEmployeeByName,
   getEmployeeByDNI,
@@ -30,14 +36,18 @@ router.get("/employees/search", searchEmployees);
 router.get("/employees/:id", getEmployeeById);
 router.post("/employees", createEmployeeV2);
 router.put("/employees/:id", updateEmployeeV2);
-
-
+router.delete("/employees/:id", deleteEmployeeV2);
+router.post("/employees/:id/impersonate", impersonateEmployeeV2);
+router.post("/employees/:id/stop-impersonation", stopImpersonationEmployeeV2);
+router.get("/catalogs/document-types", getDocumentTypes);
+router.get("/catalogs/positions", getPositions);
+router.get("/catalogs/departments", getDepartments);
+router.get("/catalogs/deduction-types", getDeductionTypes);
 
 
 
 router.post("/employee", createEmployee);
 router.patch("/employee/:DNI", updateEmployee);
-router.delete("/employee/:DNI", deleteEmployee);
 router.post("/employee/deleteTry/:IdEmpleado", tryDeleteEmployee);
 router.get("/employee/name/:employeeName", getEmployeeByName);
 router.get("/employee/DNI/:employeeDNI", getEmployeeByDNI);

@@ -69,6 +69,13 @@ export interface UpdateEmployeeSuccessResponseDTO {
   timestamp: string;
 } 
 
+export interface DeleteEmployeeSuccessResponseDTO {
+  success: boolean;
+  message: string;
+  data: {};
+  timestamp: string;
+}
+
 export interface CreateEmployeesDTO {
   IdPuesto: number;
   ValorDocumentoIdentidad: string;
@@ -111,14 +118,63 @@ export interface TryDeleteEmployeeSuccessResponseDTO {
   };
 }
 
-export interface DeleteEmployeeDTO {
-  ValorDocumentoIdentidad: string;
-}
-export interface DeleteEmployeeSuccessResponseDTO {
+export interface ImpersonateEmployeeSuccessResponseDTO {
   success: boolean;
   data: {
-    detail: string;
+    employeeInfo: {
+      Name: string;
+      DateBirth?: Date;
+      DNI: string;
+      Position: string;
+      Department: string;
+    }
   };
+  message: string;
+  timestamp: string;
+}
+
+export interface GetPositionsSuccessResponseDTO {
+  success: boolean;
+  data: {
+    Id: number;
+    Name: string;
+    HourlySalary: number;
+  }[];
+  message: string;
+  timestamp: string;
+}
+
+export interface GetDepartmentsSuccessResponseDTO {
+  success: boolean;
+  data: {
+    Id: number;
+    Name: string;
+  }[];
+  message: string;
+  timestamp: string;
+}
+
+export interface GetDeductionTypesSuccessResponseDTO {
+  success: boolean;
+  data: {
+    Id: number;
+    Name: string;
+    IsObligatory: boolean;
+    IsPercentage: boolean;
+    Percentage?: number;
+  }[];
+  message: string;
+  timestamp: string;
+}
+
+export interface GetDocumentTypesSuccessResponseDTO {
+  success: boolean;
+  data: {
+    Id: number;
+    Name: string;
+  }[];
+  message: string;
+  timestamp: string;
 }
 
 export interface GetEmployeeByNameDTO {

@@ -10,7 +10,6 @@ import {
   UpdateEmployeeRequestDTO,
   UpdateEmployeeSuccessResponseDTO,
   TryDeleteEmployeeDTO,
-  DeleteEmployeeDTO,
   GetEmployeeByNameDTO,
   GetEmployeeByDNIDTO,
 } from "../dtos/EmployeeDTO";
@@ -323,6 +322,303 @@ export const updateEmployeeV2 = async (
   }
 };
 
+export const deleteEmployeeV2 = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!id || isNaN(id)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "ID de empleado es requerido y debe ser numérico."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.deleteEmployeeV2(id, userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50009,
+        detail: "Error del sistema eliminando el empleado",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const impersonateEmployeeV2 = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!id || isNaN(id)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "ID de empleado es requerido y debe ser numérico."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.impersonateEmployeeV2(id, userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } 
+  catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 5008,
+        detail: "Error del sistema al impersonar el empleado",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const stopImpersonationEmployeeV2 = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!id || isNaN(id)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "ID de empleado es requerido y debe ser numérico."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.stopImpersonationEmployeeV2(id, userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } 
+  catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50008,
+        detail: "Error del sistema al terminar la impersonación",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const getDocumentTypes = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.getDocumentTypes(userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50011,
+        detail: "Error del sistema al consultar tipos de documentos",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const getPositions = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.getPositions(userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50012,
+        detail: "Error del sistema al consultar puestos",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const getDepartments = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.getDepartments(userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50013,
+        detail: "Error del sistema al consultar departamentos",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const getDeductionTypes = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.getDeductionTypes(userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50014,
+        detail: "Error del sistema al consultar tipos de deducciones",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
 /*
 export const getEmployeeById = async (
   req: Request,
@@ -429,66 +725,6 @@ export const updateEmployee = async (
       error: {
         code: 50008,
         detail: "Error del sistema actualizando el empleado",
-      },
-      timestamp: new Date().toISOString()
-    };
-    res.status(500).json({
-      success: errorMessage.success,
-      error: {
-        code: errorMessage.error.code,
-        details: errorMessage.error.detail,
-      },
-    });
-  }
-};
-
-export const deleteEmployee = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
-  const DNI = req.params.DNI;
-
-  const DNIRegex = /^[0-9]+$/;
-  if (!DNI || typeof DNI !== "string" || DNI.trim() === "") {
-    const errorResponse: ErrorResponseDTO = {
-      success: false,
-      error: {
-        code: 400,
-        detail: "El DNI es requerido",
-      },
-      timestamp: new Date().toISOString()
-    };
-    res.status(400).json({ success: false, error: errorResponse });
-    return;
-  }
-  if (!DNIRegex.test(DNI)) {
-    const errorResponse: ErrorResponseDTO = {
-      success: false,
-      error: {
-        code: 400,
-        detail: "DNI tiene un formato invalido",
-      },
-      timestamp: new Date().toISOString()
-    };
-    res.status(400).json({ success: false, error: errorResponse });
-    return;
-  }
-
-  const data: DeleteEmployeeDTO = { ValorDocumentoIdentidad: DNI };
-  try {
-    const response = await EmployeeService.deleteEmployee(data);
-    if (response.success) {
-      res.status(200).json(response);
-    } else {
-      res.status(500).json(response);
-    }
-  } catch (error) {
-    console.error("Error during employee deletion:", error);
-    const errorMessage: ErrorResponseDTO = {
-      success: false,
-      error: {
-        code: 50008,
-        detail: "Un error a ocurrido al eliminar el empleado",
       },
       timestamp: new Date().toISOString()
     };

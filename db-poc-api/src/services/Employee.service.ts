@@ -14,17 +14,21 @@ import {
   UpdateEmployeeRequestDTO,
   UpdateEmployeeSuccessResponseDTO,
   CreateEmployeeSuccessResponseDTO,
+  GetPositionsSuccessResponseDTO,
+  GetDepartmentsSuccessResponseDTO,
+  GetDeductionTypesSuccessResponseDTO,
   UpdateEmployeesDTO,
   UpdateEmployeesSuccessResponseDTO,
   TryDeleteEmployeeDTO,
   TryDeleteEmployeeSuccessResponseDTO,
-  DeleteEmployeeDTO,
+  GetDocumentTypesSuccessResponseDTO,
   DeleteEmployeeSuccessResponseDTO,
   GetEmployeeByNameDTO,
   GetEmployeeByNameSuccessResponseDTO,
   GetEmployeeByDNIDTO,
   GetEmployeeByDNISuccessResponseDTO,
 } from "../dtos/EmployeeDTO";
+import { error } from "console";
 
 class EmployeeService {
   async createEmployee(
@@ -313,6 +317,259 @@ async updateEmployeeV2(
     };
   }
 }
+
+async deleteEmployeeV2(
+  id: number,
+  userId: number,
+  ip: string
+): Promise<DeleteEmployeeSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+    inIdEmpleado: [String(id), TYPES.Int],
+  };
+
+  try {
+    const response = await execute("sp_eliminar_empleados", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        message: "Empleado eliminado exitosamente",
+        data: {},
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } 
+  catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50008,
+        detail: "Error del sistema eliminando el empleado",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async impersonateEmployeeV2(
+  id: number,
+  userId: number,
+  ip: string
+): Promise<any> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+    inIdEmpleado: [String(id), TYPES.Int],
+  };
+
+  try {
+    
+    const response = await execute("sp_impersonar_empleado", params, {});
+    console.log(params)
+    if (response.output.outResultCode === 0 && response.recordset.length > 0) {
+      const emp = response.recordset[0];
+      return {
+        success: true,
+        data: {
+          employeeInfo: {
+            Name: emp.Name,
+            DateBirth: emp.DateBirth,
+            DNI: emp.DNI,
+            Position: emp.Position,
+            Department: emp.Department,
+          }
+        },
+        message: "Impersonación exitosa",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response);
+    }
+  } 
+  catch (error) {
+    console.error("Error en impersonateEmployeeV2:", error);
+    return {
+      success: false,
+      error: {
+        code: 50008,
+        detail: "Error del sistema al impersonar el empleado",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async stopImpersonationEmployeeV2(
+  id: number,
+  userId: number,
+  ip: string
+): Promise<DeleteEmployeeSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+    inIdEmpleado: [String(id), TYPES.Int],
+  };
+
+  try {
+    console.log("s")
+    const response = await execute("sp_terminar_impersonar_empleado", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        message: "Impersonación terminada exitosamente",
+        data: {},
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {  
+    return {
+      success: false,
+      error: {
+        code: 50008,
+        detail: "Error del sistema al terminar la impersonación",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getDocumentTypes(
+  userId: number,
+  ip: string
+): Promise<GetDocumentTypesSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+  };
+
+  try {
+    const response = await execute("sp_consultar_tipos_documentos", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50011,
+        detail: "Error del sistema al consultar tipos de documentos",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getPositions(
+  userId: number,
+  ip: string
+): Promise<GetPositionsSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+  };
+
+  try {
+    const response = await execute("sp_consultar_puestos", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50012,
+        detail: "Error del sistema al consultar puestos",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getDepartments(
+  userId: number,
+  ip: string
+): Promise<GetDepartmentsSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+  };
+
+  try {
+    const response = await execute("sp_consultar_departamentos", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50013,
+        detail: "Error del sistema al consultar departamentos",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getDeductionTypes(
+  userId: number,
+  ip: string
+): Promise<GetDeductionTypesSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+  };
+
+  try {
+    const response = await execute("sp_consultar_tipos_deducciones", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50014,
+        detail: "Error del sistema al consultar tipos de deducciones",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
   /*
   async getEmployeeById(id: number): Promise<any> {
     if (!id || id < 1) {
@@ -422,38 +679,6 @@ async updateEmployeeV2(
               detail: "Empleado puede ser borrado sin conflictos",
             },
           };
-        } else {
-          return ErrorHandler(response) as EmployeesErrorResponseDTO;
-        }
-      }
-    } catch (error) {
-      console.error("Error details:", error);
-      throw new Error(`An error occurred while creating the employ: ${error}`);
-    }
-  }
-
-  async deleteEmployee(
-    data: DeleteEmployeeDTO,
-  ): Promise<DeleteEmployeeSuccessResponseDTO | EmployeesErrorResponseDTO> {
-    const params: inSqlParameters = {
-      inValorDocumentoIdentidad: [
-        String(data.ValorDocumentoIdentidad),
-        TYPES.VarChar,
-      ],
-    };
-
-    try {
-      if (useMock)
-        return { success: true, data: { detail: "Employ was deleted" } };
-      else {
-        const response = await execute(
-          "sp_borrado_logico_empleado",
-          params,
-          {},
-        );
-        if (response.output.outResultCode == 0) {
-          const data = response.recordset[0];
-          return { success: true, data: { detail: "Empledo borrado" } };
         } else {
           return ErrorHandler(response) as EmployeesErrorResponseDTO;
         }
