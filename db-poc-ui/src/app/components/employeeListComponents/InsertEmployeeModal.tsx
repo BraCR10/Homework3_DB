@@ -27,17 +27,47 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
   const [positionId, setPositionId] = useState<number | null>(null);
   const [departmentId, setDepartmentId] = useState<number | null>(null);
   const [mensaje, setMensaje] = useState("");
-  const [positions, setPositions] = useState<{ Id: number; Nombre: string }[]>([]);
-  const [departments, setDepartments] = useState<{ Id: number; Nombre: string }[]>([]);
-  const [documentTypes, setDocumentTypes] = useState<{ Id: number; Nombre: string }[]>([]);
+  const [positions, setPositions] = useState<{ Id: number; Name: string }[]>([]);
+  const [departments, setDepartments] = useState<{ Id: number; Name: string }[]>([]);
+  const [documentTypes, setDocumentTypes] = useState<{ Id: number; Name: string }[]>([]);
 
   useEffect(() => {
     const fetchCatalogs = async () => {
       try {
+        // Obtener el objeto "usuario" del localStorage
+        const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+
+        // Verificar si el objeto tiene un ID
+        if (!usuarioGuardado.Id) {
+          console.error("No se encontró el ID del usuario.");
+          alert("No se encontró el ID del usuario.");
+          return;
+        }
+
+        const userId = usuarioGuardado.Id.toString(); // Convertir el ID a string si es necesario
+
         const [positionsResponse, departmentsResponse, documentTypesResponse] = await Promise.all([
-          fetch(`${url}/api/v2/catalogs/positions`, { method: "GET", headers: { "Content-Type": "application/json" } }),
-          fetch(`${url}/api/v2/catalogs/departments`, { method: "GET", headers: { "Content-Type": "application/json" } }),
-          fetch(`${url}/api/v2/catalogs/document-types`, { method: "GET", headers: { "Content-Type": "application/json" } }),
+          fetch(`${url}/api/v2/catalogs/positions`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "User-Id": userId, // Enviar el ID como header
+            },
+          }),
+          fetch(`${url}/api/v2/catalogs/departments`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "User-Id": userId, // Enviar el ID como header
+            },
+          }),
+          fetch(`${url}/api/v2/catalogs/document-types`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "User-Id": userId, // Enviar el ID como header
+            },
+          }),
         ]);
 
         if (positionsResponse.ok) {
@@ -173,7 +203,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
               <option value="">Selecciona un tipo de identificación</option>
               {documentTypes.map((type) => (
                 <option key={type.Id} value={type.Id}>
-                  {type.Nombre}
+                  {type.Name}
                 </option>
               ))}
             </select>
@@ -214,7 +244,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
               <option value="">Selecciona un puesto</option>
               {positions.map((position) => (
                 <option key={position.Id} value={position.Id}>
-                  {position.Nombre}
+                  {position.Name}
                 </option>
               ))}
             </select>
@@ -232,7 +262,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
               <option value="">Selecciona un departamento</option>
               {departments.map((department) => (
                 <option key={department.Id} value={department.Id}>
-                  {department.Nombre}
+                  {department.Name}
                 </option>
               ))}
             </select>

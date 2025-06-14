@@ -102,3 +102,21 @@ p {
 .button-container img:hover {
   transform: scale(1.1);
 }
+
+/* Estilo para los dropdowns */
+select {
+  background-color: #1e1e1e; /* Fondo oscuro */
+  color: #e0e0e0; /* Texto claro */
+  border: 1px solid #444; /* Borde tenue */
+  border-radius: 4px; /* Bordes redondeados */
+  padding: 8px; /* Espaciado interno */
+  font-size: 14px; /* Tamaño de fuente */
+  width: 100%; /* Ocupa todo el ancho disponible */
+  appearance: none; /* Elimina el estilo predeterminado del navegador */
+}
+
+/* Estilo para las opciones del dropdown */
+select option {
+  background-color: #333; /* Fondo oscuro para las opciones */
+  color: #f0f8ff; /* Texto claro */
+}

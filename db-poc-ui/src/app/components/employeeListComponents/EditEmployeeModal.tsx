@@ -37,32 +37,68 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
   const [puestoId, setPuestoId] = useState<number | undefined>(undefined);
   const [departamentoId, setDepartamentoId] = useState<number | undefined>(employee.departamentoId);
   const [mensaje, setMensaje] = useState("");
-  const [puestos, setPuestos] = useState<{ Id: number; Nombre: string }[]>([]);
-  const [departamentos, setDepartamentos] = useState<{ Id: number; Nombre: string }[]>([]);
-  const [tiposIdentificacion, setTiposIdentificacion] = useState<{ Id: number; Nombre: string }[]>([]);
+  const [puestos, setPuestos] = useState<{ Id: number; Name: string }[]>([]);
+  const [departamentos, setDepartamentos] = useState<{ Id: number; Name: string }[]>([]);
+  const [tiposIdentificacion, setTiposIdentificacion] = useState<{ Id: number; Name: string }[]>([]);
 
   useEffect(() => {
     const fetchCatalogs = async () => {
       try {
-        const [puestosResponse, departamentosResponse, tiposIdentificacionResponse] = await Promise.all([
-          fetch(`${url}/api/v2/catalogs/positions`),
-          fetch(`${url}/api/v2/catalogs/departments`),
-          fetch(`${url}/api/v2/catalogs/document-types`),
+        // Obtener el objeto "usuario" del localStorage
+        const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+
+        // Verificar si el objeto tiene un ID
+        if (!usuarioGuardado.Id) {
+          console.error("No se encontró el ID del usuario.");
+          alert("No se encontró el ID del usuario.");
+          return;
+        }
+
+        const userId = usuarioGuardado.Id.toString(); // Convertir el ID a string si es necesario
+
+        const [positionsResponse, departmentsResponse, documentTypesResponse] = await Promise.all([
+          fetch(`${url}/api/v2/catalogs/positions`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "User-Id": userId, // Enviar el ID como header
+            },
+          }),
+          fetch(`${url}/api/v2/catalogs/departments`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "User-Id": userId, // Enviar el ID como header
+            },
+          }),
+          fetch(`${url}/api/v2/catalogs/document-types`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "User-Id": userId, // Enviar el ID como header
+            },
+          }),
         ]);
 
-        if (puestosResponse.ok) {
-          const puestosData = await puestosResponse.json();
-          setPuestos(puestosData.data || []);
+        if (positionsResponse.ok) {
+          const positionsData = await positionsResponse.json();
+          setPuestos(positionsData.data || []);
+        } else {
+          console.error("Error al obtener puestos:", positionsResponse.status);
         }
 
-        if (departamentosResponse.ok) {
-          const departamentosData = await departamentosResponse.json();
-          setDepartamentos(departamentosData.data || []);
+        if (departmentsResponse.ok) {
+          const departmentsData = await departmentsResponse.json();
+          setDepartamentos(departmentsData.data || []);
+        } else {
+          console.error("Error al obtener departamentos:", departmentsResponse.status);
         }
 
-        if (tiposIdentificacionResponse.ok) {
-          const tiposIdentificacionData = await tiposIdentificacionResponse.json();
-          setTiposIdentificacion(tiposIdentificacionData.data || []);
+        if (documentTypesResponse.ok) {
+          const documentTypesData = await documentTypesResponse.json();
+          setTiposIdentificacion(documentTypesData.data || []);
+        } else {
+          console.error("Error al obtener tipos de identificación:", documentTypesResponse.status);
         }
       } catch (error) {
         console.error("Error al cargar los catálogos:", error);
@@ -147,7 +183,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
               <option value="">Selecciona un tipo de identificación</option>
               {tiposIdentificacion.map((tipo) => (
                 <option key={tipo.Id} value={tipo.Id}>
-                  {tipo.Nombre}
+                  {tipo.Name}
                 </option>
               ))}
             </select>
@@ -186,7 +222,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
               <option value="">Selecciona un puesto</option>
               {puestos.map((puesto) => (
                 <option key={puesto.Id} value={puesto.Id}>
-                  {puesto.Nombre}
+                  {puesto.Name}
                 </option>
               ))}
             </select>
@@ -203,7 +239,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
               <option value="">Selecciona un departamento</option>
               {departamentos.map((departamento) => (
                 <option key={departamento.Id} value={departamento.Id}>
-                  {departamento.Nombre}
+                  {departamento.Name}
                 </option>
               ))}
             </select>
