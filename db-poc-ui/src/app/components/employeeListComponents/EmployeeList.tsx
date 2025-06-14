@@ -137,7 +137,7 @@ const EmployeeList = () => {
     NameUser: string;
     PasswordUser: string;
     DocumentTypeId: number;
-    DateBirth?: string;
+    DateBirth?: Date;
     DocumentValue: string;
     PositionId: number;
     DepartmentId: number;

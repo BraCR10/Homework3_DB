@@ -10,7 +10,7 @@ interface InsertEmployeeModalProps {
     NameUser: string;
     PasswordUser: string;
     DocumentTypeId: number;
-    DateBirth?: string;
+    DateBirth?: Date;
     DocumentValue: string;
     PositionId: number;
     DepartmentId: number;
@@ -137,13 +137,16 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
       return;
     }
 
+    // Formatear la fecha a YYYY-MM-DD
+    const formattedDateBirth = dateBirth ? new Date(dateBirth) : undefined;
+
     onSubmit({
       Name: name,
       NameUser: nameUser,
       PasswordUser: passwordUser,
       DocumentTypeId: documentTypeId,
       DocumentValue: documentValue,
-      DateBirth: dateBirth || undefined,
+      DateBirth: formattedDateBirth, // Fecha formateada
       PositionId: positionId,
       DepartmentId: departmentId,
     });

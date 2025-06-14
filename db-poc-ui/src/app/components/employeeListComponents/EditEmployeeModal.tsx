@@ -10,7 +10,7 @@ interface EditEmployeeModalProps {
     nombrePuesto: string;
     tipoIdentificacion?: number;
     valorDocumento?: string;
-    fechaNacimiento?: string;
+    DateBirth?: Date;
     departamentoId?: number;
   };
   onClose: () => void;
@@ -19,7 +19,7 @@ interface EditEmployeeModalProps {
     nombre: string;
     tipoIdentificacion?: number;
     valorDocumento?: string;
-    fechaNacimiento?: string;
+    DateBirth?: Date;
     puestoId?: number;
     departamentoId?: number;
   }) => void;
@@ -33,7 +33,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
   const [nombre, setNombre] = useState(employee.nombre);
   const [tipoIdentificacion, setTipoIdentificacion] = useState<number | undefined>(employee.tipoIdentificacion);
   const [valorDocumento, setValorDocumento] = useState(employee.valorDocumento || "");
-  const [fechaNacimiento, setFechaNacimiento] = useState(employee.fechaNacimiento || "");
+  const [DateBirth, setDateBirth] = useState(employee.DateBirth || "");
   const [puestoId, setPuestoId] = useState<number | undefined>(undefined);
   const [departamentoId, setDepartamentoId] = useState<number | undefined>(employee.departamentoId);
   const [mensaje, setMensaje] = useState("");
@@ -118,18 +118,34 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
     }
 
     try {
+      // Obtener el usuario guardado en el localStorage
+      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+
+      // Validar que el usuario tenga un ID
+      if (!usuarioGuardado.Id || isNaN(Number(usuarioGuardado.Id))) {
+        console.error("No se encontró un ID de usuario válido.");
+        alert("No se encontró un ID de usuario válido.");
+        return;
+      }
+
+      const userId = usuarioGuardado.Id.toString(); // Convertir el ID a string
+
+      // Formatear la fecha a YYYY-MM-DD
+      const formattedDateBirth = DateBirth ? new Date(DateBirth) : undefined;
+
       const response = await fetch(`${url}/api/v2/employees/${employee.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "User-Id": userId, // Enviar el User-Id en los headers
         },
         body: JSON.stringify({
-          Name: nombre,
-          DocumentTypeId: tipoIdentificacion,
-          DocumentValue: valorDocumento,
-          DateBirth: fechaNacimiento,
-          PositionId: puestoId,
-          DepartmentId: departamentoId,
+          Name: nombre || null, // Enviar null si está vacío
+          DocumentTypeId: tipoIdentificacion || null, // Enviar null si está vacío
+          DocumentValue: valorDocumento || null, // Enviar null si está vacío
+          DateBirth: formattedDateBirth, // Enviar null si no hay fecha
+          PositionId: puestoId || null, // Enviar null si está vacío
+          DepartmentId: departamentoId || null, // Enviar null si está vacío
         }),
       });
 
@@ -140,7 +156,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
           nombre,
           tipoIdentificacion,
           valorDocumento,
-          fechaNacimiento,
+          DateBirth: formattedDateBirth, // Fecha formateada
           puestoId,
           departamentoId,
         });
@@ -203,9 +219,13 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
             <label>Fecha de Nacimiento:</label>
             <input
               type="date"
-              value={fechaNacimiento}
+              value={
+                DateBirth instanceof Date
+                  ? DateBirth.toISOString().split("T")[0] // Convertir Date a string en formato YYYY-MM-DD
+                  : DateBirth || "" // Usar el valor directamente si ya es un string
+              }
               onChange={(e) => {
-                setFechaNacimiento(e.target.value);
+                setDateBirth(e.target.value); // Guardar el valor como string
                 setMensaje("");
               }}
             />
