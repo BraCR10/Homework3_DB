@@ -619,6 +619,226 @@ export const getDeductionTypes = async (
   }
 };
 
+export const getWeeklyPayroll = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const employeeId = Number(req.params.id);
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!employeeId || isNaN(employeeId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "ID de empleado es requerido y debe ser numérico."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.getWeeklyPayroll(employeeId, userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50015,
+        detail: "Error del sistema al consultar planillas semanales",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const getWeeklyDeductions = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const employeeId = Number(req.params.id);
+    const weekId = Number(req.params.weekId);
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!employeeId || isNaN(employeeId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "ID de empleado es requerido y debe ser numérico."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    if (!weekId || isNaN(weekId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "ID de semana es requerido y debe ser numérico."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.getWeeklyDeductions(employeeId, weekId, userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50016,
+        detail: "Error del sistema al consultar deducciones semanales",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const getWeeklyGrossDetail = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const employeeId = Number(req.params.id);
+    const weekId = Number(req.params.weekId);
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!employeeId || isNaN(employeeId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "ID de empleado es requerido y debe ser numérico."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    if (!weekId || isNaN(weekId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "ID de semana es requerido y debe ser numérico."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.getWeeklyGrossDetail(employeeId, weekId, userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50017,
+        detail: "Error del sistema al consultar el detalle bruto semanal",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
+export const getMonthlyPayroll = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const employeeId = Number(req.params.id);
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!employeeId || isNaN(employeeId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "ID de empleado es requerido y debe ser numérico."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.getMonthlyPayroll(employeeId, userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50018,
+        detail: "Error del sistema al consultar planilla mensual",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
 /*
 export const getEmployeeById = async (
   req: Request,

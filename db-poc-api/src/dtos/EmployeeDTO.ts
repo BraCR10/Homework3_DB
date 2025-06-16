@@ -177,6 +177,67 @@ export interface GetDocumentTypesSuccessResponseDTO {
   timestamp: string;
 }
 
+export interface GetWeeklyPayrollSuccessResponseDTO {
+  success: boolean;
+  data: {
+    WeekId: number;
+    StartDate: string;
+    EndDate: string;
+    GrossSalary: number;
+    TotalDeductions: number;
+    NetSalary: number;
+    OrdinaryHours: number;
+    NormalExtraHours: number;
+    DoubleExtraHours: number;
+  }[];
+  message: string;
+  timestamp: string;
+}
+
+export interface GetWeeklyDeductionsSuccessResponseDTO {
+  success: boolean;
+  data: {
+    DeductionType: string;
+    isPercentage: boolean;
+    Percentage: number;
+    Amount: number;
+  }[];
+  message: string;
+  timestamp: string;
+}
+
+export interface GetWeeklyGrossDetailSuccessResponseDTO {
+  success: boolean;
+  data: {
+    DateDay: string; // YYYY-MM-DD
+    EntryTime: string; // HH:MM
+    ExitTime: string; // HH:MM
+    OrdinaryHours: number;
+    OrdinaryAmount: number;
+    NormalExtraHours: number;
+    NormalExtraAmount: number;
+    DoubleExtraHours: number;
+    DoubleExtraAmount: number;
+    DayTotal: number;
+  }[];
+  message: string;
+  timestamp: string;
+}
+
+export interface GetMonthlyPayrollSuccessResponseDTO {
+  success: boolean;
+  data: {
+    Month: number;
+    Year: number;
+    MonthName: string;
+    GrossSalary: number;
+    TotalDeductions: number;
+    NetSalary: number;
+  }[];
+  message: string;
+  timestamp: string;
+}
+
 export interface GetEmployeeByNameDTO {
   employeeName: string;
 }
