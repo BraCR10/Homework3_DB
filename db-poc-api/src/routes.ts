@@ -13,6 +13,10 @@ import {
   getEmployees,
   getDepartments,
   getDeductionTypes,
+  getWeeklyPayroll,
+  getWeeklyDeductions,
+  getWeeklyGrossDetail,
+  getMonthlyPayroll,
   searchEmployees,
   getEmployeeById,
   updateEmployee,
@@ -39,11 +43,18 @@ router.put("/employees/:id", updateEmployeeV2);
 router.delete("/employees/:id", deleteEmployeeV2);
 router.post("/employees/:id/impersonate", impersonateEmployeeV2);
 router.post("/employees/:id/stop-impersonation", stopImpersonationEmployeeV2);
+
+//Catalogs routes
 router.get("/catalogs/document-types", getDocumentTypes);
 router.get("/catalogs/positions", getPositions);
 router.get("/catalogs/departments", getDepartments);
 router.get("/catalogs/deduction-types", getDeductionTypes);
 
+//planillas routes
+router.get("/employees/:id/payroll/weekly", getWeeklyPayroll);
+router.get("/employees/:id/payroll/weekly/:weekId/deductions", getWeeklyDeductions);
+router.get("/employees/:id/payroll/weekly/:weekId/gross-detail", getWeeklyGrossDetail);
+router.get("/employees/:id/payroll/monthly", getMonthlyPayroll);
 
 
 router.post("/employee", createEmployee);

@@ -17,6 +17,10 @@ import {
   GetPositionsSuccessResponseDTO,
   GetDepartmentsSuccessResponseDTO,
   GetDeductionTypesSuccessResponseDTO,
+  GetWeeklyPayrollSuccessResponseDTO,
+  GetWeeklyDeductionsSuccessResponseDTO,
+  GetWeeklyGrossDetailSuccessResponseDTO,
+  GetMonthlyPayrollSuccessResponseDTO,
   UpdateEmployeesDTO,
   UpdateEmployeesSuccessResponseDTO,
   TryDeleteEmployeeDTO,
@@ -564,6 +568,150 @@ async getDeductionTypes(
       error: {
         code: 50014,
         detail: "Error del sistema al consultar tipos de deducciones",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getWeeklyPayroll(
+  employeeId: number,
+  userId: number,
+  ip: string
+): Promise<GetWeeklyPayrollSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+    inIdEmpleado: [String(employeeId), TYPES.Int],
+  };
+
+  try {
+    const response = await execute("sp_consultar_planillas_semanales", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50008,
+        detail: "Error del sistema al consultar planillas semanales",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getWeeklyDeductions(
+  employeeId: number,
+  weekId: number,
+  userId: number,
+  ip: string
+): Promise<GetWeeklyDeductionsSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+    inIdEmpleado: [String(employeeId), TYPES.Int],
+    inIdSemana: [String(weekId), TYPES.Int],
+  };
+
+  try {
+    const response = await execute("sp_consultar_deducciones_semana", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50016,
+        detail: "Error del sistema al consultar deducciones semanales",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getWeeklyGrossDetail(
+  employeeId: number,
+  weekId: number,
+  userId: number,
+  ip: string
+): Promise<GetWeeklyGrossDetailSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+    inIdEmpleado: [String(employeeId), TYPES.Int],
+    inIdSemana: [String(weekId), TYPES.Int],
+  };
+
+  try {
+    const response = await execute("sp_consultar_salario_bruto_semanal", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50017,
+        detail: "Error del sistema al consultar el detalle bruto semanal",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getMonthlyPayroll(
+  employeeId: number,
+  userId: number,
+  ip: string
+): Promise<GetMonthlyPayrollSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+    inIdEmpleado: [String(employeeId), TYPES.Int],
+  };
+
+  try {
+    const response = await execute("sp_consultar_plantilla_mensual", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50018,
+        detail: "Error del sistema al consultar planilla mensual",
       },
       timestamp: new Date().toISOString(),
     };
