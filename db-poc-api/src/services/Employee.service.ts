@@ -467,7 +467,7 @@ async getDocumentTypes(
     return {
       success: false,
       error: {
-        code: 50011,
+        code: 50008,
         detail: "Error del sistema al consultar tipos de documentos",
       },
       timestamp: new Date().toISOString(),
@@ -500,7 +500,7 @@ async getPositions(
     return {
       success: false,
       error: {
-        code: 50012,
+        code: 50008,
         detail: "Error del sistema al consultar puestos",
       },
       timestamp: new Date().toISOString(),
@@ -533,7 +533,7 @@ async getDepartments(
     return {
       success: false,
       error: {
-        code: 50013,
+        code: 50008,
         detail: "Error del sistema al consultar departamentos",
       },
       timestamp: new Date().toISOString(),
@@ -566,7 +566,7 @@ async getDeductionTypes(
     return {
       success: false,
       error: {
-        code: 50014,
+        code: 50008,
         detail: "Error del sistema al consultar tipos de deducciones",
       },
       timestamp: new Date().toISOString(),
@@ -579,6 +579,37 @@ async getWeeklyPayroll(
   userId: number,
   ip: string
 ): Promise<GetWeeklyPayrollSuccessResponseDTO | ErrorResponseDTO> {
+  if (useMock) {
+    return {
+      success: true,
+      data: [
+        {
+          WeekId: 1,
+          StartDate: "2024-06-10",
+          EndDate: "2024-06-16",
+          GrossSalary: 5000,
+          TotalDeductions: 500,
+          NetSalary: 4500,
+          OrdinaryHours: 40,
+          NormalExtraHours: 5,
+          DoubleExtraHours: 2,
+        },
+        {
+          WeekId: 2,
+          StartDate: "2024-06-17",
+          EndDate: "2024-06-23",
+          GrossSalary: 5100,
+          TotalDeductions: 510,
+          NetSalary: 4590,
+          OrdinaryHours: 40,
+          NormalExtraHours: 4,
+          DoubleExtraHours: 3,
+        }
+      ],
+      message: "",
+      timestamp: new Date().toISOString(),
+    };
+  }
   const params: inSqlParameters = {
     inIdUsuario: [String(userId), TYPES.Int],
     inIP: [ip, TYPES.VarChar],
@@ -615,6 +646,27 @@ async getWeeklyDeductions(
   userId: number,
   ip: string
 ): Promise<GetWeeklyDeductionsSuccessResponseDTO | ErrorResponseDTO> {
+  if (useMock) {
+    return {
+      success: true,
+      data: [
+        {
+          DeductionType: "Seguro Social",
+          isPercentage: true,
+          Percentage: 9.5,
+          Amount: 150.75,
+        },
+        {
+          DeductionType: "Impuesto Renta",
+          isPercentage: false,
+          Percentage: 0,
+          Amount: 200.00,
+        }
+      ],
+      message: "",
+      timestamp: new Date().toISOString(),
+    };
+  }
   const params: inSqlParameters = {
     inIdUsuario: [String(userId), TYPES.Int],
     inIP: [ip, TYPES.VarChar],
@@ -652,6 +704,39 @@ async getWeeklyGrossDetail(
   userId: number,
   ip: string
 ): Promise<GetWeeklyGrossDetailSuccessResponseDTO | ErrorResponseDTO> {
+  if (useMock) {
+    return {
+      success: true,
+      data: [
+        {
+          DateDay: "2024-06-10",
+          EntryTime: "08:00",
+          ExitTime: "17:00",
+          OrdinaryHours: 8,
+          OrdinaryAmount: 400,
+          NormalExtraHours: 2,
+          NormalExtraAmount: 100,
+          DoubleExtraHours: 1,
+          DoubleExtraAmount: 80,
+          DayTotal: 580
+        },
+        {
+          DateDay: "2024-06-11",
+          EntryTime: "08:00",
+          ExitTime: "17:00",
+          OrdinaryHours: 8,
+          OrdinaryAmount: 400,
+          NormalExtraHours: 1,
+          NormalExtraAmount: 50,
+          DoubleExtraHours: 0,
+          DoubleExtraAmount: 0,
+          DayTotal: 450
+        }
+      ],
+      message: "",
+      timestamp: new Date().toISOString(),
+    };
+  }
   const params: inSqlParameters = {
     inIdUsuario: [String(userId), TYPES.Int],
     inIP: [ip, TYPES.VarChar],
@@ -675,7 +760,7 @@ async getWeeklyGrossDetail(
     return {
       success: false,
       error: {
-        code: 50017,
+        code: 50008,
         detail: "Error del sistema al consultar el detalle bruto semanal",
       },
       timestamp: new Date().toISOString(),
@@ -688,6 +773,31 @@ async getMonthlyPayroll(
   userId: number,
   ip: string
 ): Promise<GetMonthlyPayrollSuccessResponseDTO | ErrorResponseDTO> {
+  if (useMock) {
+    return {
+      success: true,
+      data: [
+        {
+          Month: 6,
+          Year: 2024,
+          MonthName: "Junio",
+          GrossSalary: 20000,
+          TotalDeductions: 2000,
+          NetSalary: 18000,
+        },
+        {
+          Month: 5,
+          Year: 2024,
+          MonthName: "Mayo",
+          GrossSalary: 19500,
+          TotalDeductions: 1950,
+          NetSalary: 17550,
+        }
+      ],
+      message: "",
+      timestamp: new Date().toISOString(),
+    };
+  }
   const params: inSqlParameters = {
     inIdUsuario: [String(userId), TYPES.Int],
     inIP: [ip, TYPES.VarChar],
@@ -710,7 +820,7 @@ async getMonthlyPayroll(
     return {
       success: false,
       error: {
-        code: 50018,
+        code: 50008,
         detail: "Error del sistema al consultar planilla mensual",
       },
       timestamp: new Date().toISOString(),
