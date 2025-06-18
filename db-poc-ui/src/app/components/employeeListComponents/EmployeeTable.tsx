@@ -36,10 +36,7 @@ interface EmployeeTableProps {
 const EmployeeTable: React.FC<EmployeeTableProps> = ({
   empleados,
   handleDelete,
-  handleQuery,
   handleEdit,
-  handleMovementList,
-  handleInsertMovement,
   handleImpersonate,
 }) => {
   if (empleados.length === 0) {
@@ -61,10 +58,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
             key={empleado.id} // Agregar la propiedad `key` única
             empleado={empleado}
             handleDelete={handleDelete}
-            handleQuery={handleQuery}
             handleEdit={handleEdit}
-            handleMovementList={handleMovementList}
-            handleInsertMovement={handleInsertMovement}
             handleImpersonate={handleImpersonate}
           />
         ))}
