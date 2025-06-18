@@ -7,6 +7,7 @@ import "../../styles/employee.css";
 import "../../styles/insertEmployeeModal.css";
 import EditEmployeeModal from "./EditEmployeeModal";
 import InsertEmployeeModal from "./InsertEmployeeModal";
+import ImpersonateEmployee from "./ImpersonateEmployee";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { useRouter } from "next/navigation";
 
@@ -43,6 +44,7 @@ interface Empleado {
 }
 
 const EmployeeList = () => {
+  const [impersonatingEmployeeId, setImpersonatingEmployeeId] = useState<number | null>(null);
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [filtro, setFiltro] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState<Empleado | null>(null);
@@ -232,12 +234,20 @@ const EmployeeList = () => {
   };
 
   const handleImpersonate = (id: number) => {
-    console.log("Impersonar empleado con ID:", id);
+    setImpersonatingEmployeeId(id);
   };
+
+  const stopImpersonation = () => {
+    setImpersonatingEmployeeId(null);
+  };
+
+  if (impersonatingEmployeeId) {
+    return <ImpersonateEmployee employeeId={impersonatingEmployeeId} onStopImpersonation={stopImpersonation} />;
+  }
 
   return (
     <div className="listar-empleados-container">
-      <h2>Panel de Administración - Lista de Empleados</h2>
+      <h1>Panel de Administración - Lista de Empleados</h1>
       <div className="filtro-container">
         <FilterBar filtro={filtro} setFiltro={setFiltro} aplicarFiltro={aplicarFiltro} />
         <button
