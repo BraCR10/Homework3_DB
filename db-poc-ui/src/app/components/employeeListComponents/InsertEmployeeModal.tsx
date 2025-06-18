@@ -10,8 +10,8 @@ interface InsertEmployeeModalProps {
     NameUser: string;
     PasswordUser: string;
     DocumentTypeId: number;
-    DateBirth?: Date;
     DocumentValue: string;
+    DateBirth?: string; // Cambiado a string para enviar YYYY-MM-DD
     PositionId: number;
     DepartmentId: number;
   }) => void;
@@ -34,38 +34,36 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
   useEffect(() => {
     const fetchCatalogs = async () => {
       try {
-        // Obtener el objeto "usuario" del localStorage
         const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
 
-        // Verificar si el objeto tiene un ID
         if (!usuarioGuardado.Id) {
           console.error("No se encontró el ID del usuario.");
           alert("No se encontró el ID del usuario.");
           return;
         }
 
-        const userId = usuarioGuardado.Id.toString(); // Convertir el ID a string si es necesario
+        const userId = usuarioGuardado.Id.toString();
 
         const [positionsResponse, departmentsResponse, documentTypesResponse] = await Promise.all([
           fetch(`${url}/api/v2/catalogs/positions`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "User-Id": userId, // Enviar el ID como header
+              "User-Id": userId,
             },
           }),
           fetch(`${url}/api/v2/catalogs/departments`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "User-Id": userId, // Enviar el ID como header
+              "User-Id": userId,
             },
           }),
           fetch(`${url}/api/v2/catalogs/document-types`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "User-Id": userId, // Enviar el ID como header
+              "User-Id": userId,
             },
           }),
         ]);
@@ -99,7 +97,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
     fetchCatalogs();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name.trim() || !/^[a-zA-Z\s]+$/.test(name)) {
@@ -138,18 +136,50 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
     }
 
     // Formatear la fecha a YYYY-MM-DD
-    const formattedDateBirth = dateBirth ? new Date(dateBirth) : undefined;
+    const formattedDateBirth = dateBirth ? new Date(dateBirth).toISOString().split("T")[0] : undefined;
 
-    onSubmit({
-      Name: name,
-      NameUser: nameUser,
-      PasswordUser: passwordUser,
-      DocumentTypeId: documentTypeId,
-      DocumentValue: documentValue,
-      DateBirth: formattedDateBirth, // Fecha formateada
-      PositionId: positionId,
-      DepartmentId: departmentId,
-    });
+    try {
+      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+
+      if (!usuarioGuardado.Id) {
+        console.error("No se encontró un usuario logueado.");
+        alert("No se encontró un usuario logueado.");
+        return;
+      }
+
+      const userId = usuarioGuardado.Id.toString();
+
+      const response = await fetch(`${url}/api/v2/employees`, {
+        method: "POST", // Método correcto para crear un empleado
+        headers: {
+          "Content-Type": "application/json",
+          "User-Id": userId, // Enviar el User-Id en los headers
+        },
+        body: JSON.stringify({
+          Name: name,
+          NameUser: nameUser,
+          PasswordUser: passwordUser,
+          DocumentTypeId: documentTypeId,
+          DocumentValue: documentValue,
+          DateBirth: formattedDateBirth, // Fecha formateada como YYYY-MM-DD
+          PositionId: positionId,
+          DepartmentId: departmentId,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert("✅ Empleado creado exitosamente.");
+        onSubmit(data.data); // Enviar los datos al componente padre
+        onClose(); // Cerrar el modal
+      } else {
+        const errorData = await response.json();
+        setMensaje(`❌ Error: ${errorData.error.detail}`);
+      }
+    } catch (error) {
+      console.error("Error al insertar el empleado:", error);
+      setMensaje("❌ Ocurrió un error al intentar insertar el empleado.");
+    }
   };
 
   return (

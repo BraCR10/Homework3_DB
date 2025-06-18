@@ -10,7 +10,7 @@ interface EditEmployeeModalProps {
     nombrePuesto: string;
     tipoIdentificacion?: number;
     valorDocumento?: string;
-    DateBirth?: Date;
+    DateBirth?: string;
     departamentoId?: number;
   };
   onClose: () => void;
@@ -19,7 +19,7 @@ interface EditEmployeeModalProps {
     nombre: string;
     tipoIdentificacion?: number;
     valorDocumento?: string;
-    DateBirth?: Date;
+    DateBirth?: string;
     puestoId?: number;
     departamentoId?: number;
   }) => void;
@@ -131,7 +131,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
       const userId = usuarioGuardado.Id.toString(); // Convertir el ID a string
 
       // Formatear la fecha a YYYY-MM-DD
-      const formattedDateBirth = DateBirth ? new Date(DateBirth) : undefined;
+    const formattedDateBirth = DateBirth ? new Date(DateBirth).toISOString().split("T")[0] : undefined;
 
       const response = await fetch(`${url}/api/v2/employees/${employee.id}`, {
         method: "PUT",
@@ -219,13 +219,9 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
             <label>Fecha de Nacimiento:</label>
             <input
               type="date"
-              value={
-                DateBirth instanceof Date
-                  ? DateBirth.toISOString().split("T")[0] // Convertir Date a string en formato YYYY-MM-DD
-                  : DateBirth || "" // Usar el valor directamente si ya es un string
-              }
+              value={DateBirth}
               onChange={(e) => {
-                setDateBirth(e.target.value); // Guardar el valor como string
+                setDateBirth(e.target.value);
                 setMensaje("");
               }}
             />
