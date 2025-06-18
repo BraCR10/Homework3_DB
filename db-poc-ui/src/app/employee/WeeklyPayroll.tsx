@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./employeePayroll.css";
 
-interface WeeklyPayrollProps {
-  userId: number;
-}
+const url: string = "http://localhost:3050";
 
 interface PayrollRow {
   WeekId: number;
@@ -25,7 +23,7 @@ interface Deduction {
 }
 
 interface GrossDetail {
-  Date: string;
+  DateDay: string;
   EntryTime: string;
   ExitTime: string;
   OrdinaryHours: number;
@@ -37,27 +35,97 @@ interface GrossDetail {
   DayTotal: number;
 }
 
-export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
+export default function WeeklyPayroll() {
   const [rows, setRows] = useState<PayrollRow[]>([]);
   const [deductions, setDeductions] = useState<Deduction[] | null>(null);
   const [grossDetail, setGrossDetail] = useState<GrossDetail[] | null>(null);
 
   useEffect(() => {
-    fetch(`/api/v2/employees/${userId}/payroll/weekly/`)
-      .then(res => res.json())
-      .then(data => setRows(data.data || []));
-  }, [userId]);
+    const fetchWeeklyPayroll = async () => {
+      try {
+        // Obtener el usuario desde el localStorage
+        const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
 
-  const handleShowDeductions = (weekId: number) => {
-    fetch(`/api/v2/employees/${userId}/payroll/weekly/${weekId}/deductions`)
-      .then(res => res.json())
-      .then(data => setDeductions(data.data || []));
+        // Validar que el usuario tenga un ID
+        if (!usuarioGuardado.Id || isNaN(Number(usuarioGuardado.Id))) {
+          console.error("No se encontró un ID de usuario válido.");
+          alert("No se encontró un ID de usuario válido.");
+          return;
+        }
+
+        const userId = usuarioGuardado.Id.toString(); // Convertir el ID a string
+
+        const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/weekly/`, {
+          method: "GET",
+          headers: {
+            "User-Id": userId,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setRows(data.data || []);
+      } catch (error) {
+        console.error("Error al obtener planillas semanales:", error);
+        alert("Ocurrió un error al intentar obtener las planillas semanales.");
+      }
+    };
+
+    fetchWeeklyPayroll();
+  }, []);
+
+  const handleShowDeductions = async (weekId: number) => {
+    try {
+      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+      const userId = usuarioGuardado.Id.toString();
+
+      const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/weekly/${weekId}/deductions`, {
+        method: "GET",
+        headers: {
+          "User-Id": userId,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setDeductions(data.data || []);
+    } catch (error) {
+      console.error("Error al obtener deducciones:", error);
+      alert("Ocurrió un error al intentar obtener las deducciones.");
+    }
   };
 
-  const handleShowGrossDetail = (weekId: number) => {
-    fetch(`/api/v2/employees/${userId}/payroll/weekly/${weekId}/gross-detail`)
-      .then(res => res.json())
-      .then(data => setGrossDetail(data.data || []));
+  const handleShowGrossDetail = async (weekId: number) => {
+    try {
+      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+      const userId = usuarioGuardado.Id.toString();
+
+      const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/weekly/${weekId}/gross-detail`, {
+        method: "GET",
+        headers: {
+          "User-Id": userId,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setGrossDetail(data.data || []);
+    } catch (error) {
+      console.error("Error al obtener detalle bruto:", error);
+      alert("Ocurrió un error al intentar obtener el detalle bruto.");
+    }
   };
 
   return (
@@ -76,25 +144,33 @@ export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
           </tr>
         </thead>
         <tbody>
-          {rows.map(row => (
-            <tr key={row.WeekId}>
-              <td>{row.StartDate} - {row.EndDate}</td>
-              <td>
-                <button onClick={() => handleShowGrossDetail(row.WeekId)}>
-                  ₡{row.GrossSalary}
-                </button>
-              </td>
-              <td>
-                <button onClick={() => handleShowDeductions(row.WeekId)}>
-                  ₡{row.TotalDeductions}
-                </button>
-              </td>
-              <td>₡{row.NetSalary}</td>
-              <td>{row.OrdinaryHours}</td>
-              <td>{row.NormalExtraHours}</td>
-              <td>{row.DoubleExtraHours}</td>
+          {rows.length === 0 ? (
+            <tr>
+              <td colSpan={7}>No se encontraron planillas semanales.</td>
             </tr>
-          ))}
+          ) : (
+            rows.map((row) => (
+              <tr key={row.WeekId}>
+                <td>
+                  {row.StartDate} - {row.EndDate}
+                </td>
+                <td>
+                  <button onClick={() => handleShowGrossDetail(row.WeekId)}>
+                    ₡{row.GrossSalary}
+                  </button>
+                </td>
+                <td>
+                  <button onClick={() => handleShowDeductions(row.WeekId)}>
+                    ₡{row.TotalDeductions}
+                  </button>
+                </td>
+                <td>₡{row.NetSalary}</td>
+                <td>{row.OrdinaryHours}</td>
+                <td>{row.NormalExtraHours}</td>
+                <td>{row.DoubleExtraHours}</td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
@@ -146,7 +222,7 @@ export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
             <tbody>
               {grossDetail.map((d, i) => (
                 <tr key={i}>
-                  <td>{d.Date}</td>
+                  <td>{d.DateDay}</td>
                   <td>{d.EntryTime}</td>
                   <td>{d.ExitTime}</td>
                   <td>{d.OrdinaryHours}</td>
