@@ -162,6 +162,7 @@ const EmployeeList = () => {
         return;
       }
 
+      console.log("Datos enviados al backend:", newEmployee);
       const response = await fetch(`${url}/api/v2/employees`, {
         method: "POST",
         headers: {
@@ -231,19 +232,7 @@ const EmployeeList = () => {
     setEmployeeToDelete(id);
     setDeleteConfirmationVisible(true);
   };
-
-  const handleQuery = (empleado: Empleado) => {
-    console.log("Consultar empleado:", empleado);
-  };
-
-  const handleMovementList = (empleado: Empleado) => {
-    console.log("Listar movimientos del empleado:", empleado);
-  };
-
-  const handleInsertMovement = (empleado: Empleado) => {
-    console.log("Insertar movimiento para el empleado:", empleado);
-  };
-
+  
   const handleImpersonate = (id: number) => {
     setImpersonatingEmployeeId(id);
   };
@@ -284,9 +273,6 @@ const EmployeeList = () => {
         empleados={empleados}
         handleEdit={handleEdit}
         handleDelete={confirmDelete}
-        handleQuery={handleQuery}
-        handleMovementList={handleMovementList}
-        handleInsertMovement={handleInsertMovement}
         handleImpersonate={handleImpersonate}
       />
       {insertEmployeeModalVisible && (

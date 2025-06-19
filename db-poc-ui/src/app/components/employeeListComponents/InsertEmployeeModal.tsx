@@ -97,7 +97,7 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
     fetchCatalogs();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name.trim() || !/^[a-zA-Z\s]+$/.test(name)) {
@@ -137,63 +137,17 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
 
     // Formatear la fecha a YYYY-MM-DD
     const formattedDateBirth = dateBirth ? new Date(dateBirth).toISOString().split("T")[0] : undefined;
-
-    try {
-      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
-
-      if (!usuarioGuardado.Id) {
-        console.error("No se encontró un usuario logueado.");
-        alert("No se encontró un usuario logueado.");
-        return;
-      }
-
-      const userId = usuarioGuardado.Id.toString();
-
-      const response = await fetch(`${url}/api/v2/employees`, {
-        method: "POST", // Método correcto para crear un empleado
-        headers: {
-          "Content-Type": "application/json",
-          "User-Id": userId, // Enviar el User-Id en los headers
-        },
-        body: JSON.stringify({
-          Name: name,
-          NameUser: nameUser,
-          PasswordUser: passwordUser,
-          DocumentTypeId: documentTypeId,
-          DocumentValue: documentValue,
-          DateBirth: formattedDateBirth, // Fecha formateada como YYYY-MM-DD
-          PositionId: positionId,
-          DepartmentId: departmentId,
-        }),
-      });
-      console.log("Headers enviados:", {
-        "Content-Type": "application/json",
-        "User-Id": userId,
-      });
-
-      console.log("Datos enviados al backend:", {
-        Name: name,
-        NameUser: nameUser,
-        PasswordUser: passwordUser,
-        DocumentTypeId: documentTypeId,
-        DocumentValue: documentValue,
-        DateBirth: formattedDateBirth,
-        PositionId: positionId,
-        DepartmentId: departmentId,
-      });
-      if (response.ok) {
-        const data = await response.json();
-        alert("✅ Empleado creado exitosamente.");
-        onSubmit(data.data); // Enviar los datos al componente padre
-        onClose(); // Cerrar el modal
-      } else {
-        const errorData = await response.json();
-        setMensaje(`❌ Error: ${errorData.error.detail}`);
-      }
-    } catch (error) {
-      console.error("Error al insertar el empleado:", error);
-      setMensaje("❌ Ocurrió un error al intentar insertar el empleado.");
-    }
+    // Enviar los datos al componente padre
+    onSubmit({
+      Name: name,
+      NameUser: nameUser,
+      PasswordUser: passwordUser,
+      DocumentTypeId: documentTypeId,
+      DocumentValue: documentValue,
+      DateBirth: formattedDateBirth,
+      PositionId: positionId,
+      DepartmentId: departmentId,
+    });
   };
 
   return (

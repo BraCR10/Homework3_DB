@@ -10,22 +10,7 @@ interface EmployeeTableProps {
     nombrePuesto: string;
   }[];
   handleDelete: (id: number) => void;
-  handleQuery: (empleado: {
-    id: number;
-    nombre: string;
-    nombrePuesto: string;
-  }) => void;
   handleEdit: (empleado: {
-    id: number;
-    nombre: string;
-    nombrePuesto: string;
-  }) => void;
-  handleMovementList: (empleado: {
-    id: number;
-    nombre: string;
-    nombrePuesto: string;
-  }) => void;
-  handleInsertMovement: (empleado: {
     id: number;
     nombre: string;
     nombrePuesto: string;
