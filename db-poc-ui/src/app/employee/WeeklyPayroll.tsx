@@ -75,8 +75,8 @@ export default function WeeklyPayroll() {
       }
     };
 
-  fetchWeeklyPayroll();
-},);
+    fetchWeeklyPayroll();
+  });
 
   const handleShowDeductions = async (weekId: number) => {
     try {
@@ -146,7 +146,8 @@ export default function WeeklyPayroll() {
             rows.map((row) => (
               <tr key={row.WeekId}>
                 <td>
-                  {row.StartDate} - {row.EndDate}
+                  {/* Formatear las fechas antes de mostrarlas */}
+                  {new Date(row.StartDate).toLocaleDateString()} - {new Date(row.EndDate).toLocaleDateString()}
                 </td>
                 <td>
                   <button onClick={() => handleShowGrossDetail(row.WeekId)}>
