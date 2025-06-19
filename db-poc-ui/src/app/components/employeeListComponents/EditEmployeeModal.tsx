@@ -12,6 +12,7 @@ interface EditEmployeeModalProps {
     valorDocumento?: string;
     DateBirth?: string;
     departamentoId?: number;
+    puestoId?: number;
   };
   onClose: () => void;
   onSubmit: (updatedEmployee: {
@@ -30,12 +31,12 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const [nombre, setNombre] = useState(employee.nombre);
-  const [tipoIdentificacion, setTipoIdentificacion] = useState<number | undefined>(employee.tipoIdentificacion);
-  const [valorDocumento, setValorDocumento] = useState(employee.valorDocumento || "");
-  const [DateBirth, setDateBirth] = useState(employee.DateBirth || "");
-  const [puestoId, setPuestoId] = useState<number | undefined>(undefined);
-  const [departamentoId, setDepartamentoId] = useState<number | undefined>(employee.departamentoId);
+  const [nombre, setNombre] = useState(employee?.nombre || "");
+  const [tipoIdentificacion, setTipoIdentificacion] = useState<number | undefined>(employee?.tipoIdentificacion);
+  const [valorDocumento, setValorDocumento] = useState(employee?.valorDocumento || "");
+  const [DateBirth, setDateBirth] = useState(employee?.DateBirth || "");
+  const [puestoId, setPuestoId] = useState<number | undefined>(employee?.puestoId);
+  const [departamentoId, setDepartamentoId] = useState<number | undefined>(employee?.departamentoId);
   const [mensaje, setMensaje] = useState("");
   const [puestos, setPuestos] = useState<{ Id: number; Name: string }[]>([]);
   const [departamentos, setDepartamentos] = useState<{ Id: number; Name: string }[]>([]);
@@ -44,38 +45,36 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
   useEffect(() => {
     const fetchCatalogs = async () => {
       try {
-        // Obtener el objeto "usuario" del localStorage
         const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
 
-        // Verificar si el objeto tiene un ID
         if (!usuarioGuardado.Id) {
           console.error("No se encontró el ID del usuario.");
           alert("No se encontró el ID del usuario.");
           return;
         }
 
-        const userId = usuarioGuardado.Id.toString(); // Convertir el ID a string si es necesario
+        const userId = usuarioGuardado.Id.toString();
 
         const [positionsResponse, departmentsResponse, documentTypesResponse] = await Promise.all([
           fetch(`${url}/api/v2/catalogs/positions`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "User-Id": userId, // Enviar el ID como header
+              "User-Id": userId,
             },
           }),
           fetch(`${url}/api/v2/catalogs/departments`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "User-Id": userId, // Enviar el ID como header
+              "User-Id": userId,
             },
           }),
           fetch(`${url}/api/v2/catalogs/document-types`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "User-Id": userId, // Enviar el ID como header
+              "User-Id": userId,
             },
           }),
         ]);
@@ -118,34 +117,31 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
     }
 
     try {
-      // Obtener el usuario guardado en el localStorage
       const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
 
-      // Validar que el usuario tenga un ID
       if (!usuarioGuardado.Id || isNaN(Number(usuarioGuardado.Id))) {
         console.error("No se encontró un ID de usuario válido.");
         alert("No se encontró un ID de usuario válido.");
         return;
       }
 
-      const userId = usuarioGuardado.Id.toString(); // Convertir el ID a string
+      const userId = usuarioGuardado.Id.toString();
 
-      // Formatear la fecha a YYYY-MM-DD
-    const formattedDateBirth = DateBirth ? new Date(DateBirth).toISOString().split("T")[0] : undefined;
+      const formattedDateBirth = DateBirth ? new Date(DateBirth).toISOString().split("T")[0] : undefined;
 
       const response = await fetch(`${url}/api/v2/employees/${employee.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "User-Id": userId, // Enviar el User-Id en los headers
+          "User-Id": userId,
         },
         body: JSON.stringify({
-          Name: nombre || null, // Enviar null si está vacío
-          DocumentTypeId: tipoIdentificacion || null, // Enviar null si está vacío
-          DocumentValue: valorDocumento || null, // Enviar null si está vacío
-          DateBirth: formattedDateBirth, // Enviar null si no hay fecha
-          PositionId: puestoId || null, // Enviar null si está vacío
-          DepartmentId: departamentoId || null, // Enviar null si está vacío
+          Name: nombre || null,
+          DocumentTypeId: tipoIdentificacion || null,
+          DocumentValue: valorDocumento || null,
+          DateBirth: formattedDateBirth,
+          PositionId: puestoId || null,
+          DepartmentId: departamentoId || null,
         }),
       });
 
@@ -156,7 +152,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
           nombre,
           tipoIdentificacion,
           valorDocumento,
-          DateBirth: formattedDateBirth, // Fecha formateada
+          DateBirth: formattedDateBirth,
           puestoId,
           departamentoId,
         });

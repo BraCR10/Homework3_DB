@@ -233,6 +233,8 @@ async createEmployeeV2(
     inIdPuesto: [String(data.PositionId), TYPES.Int],
     inIdDepartamento: [String(data.DepartmentId), TYPES.Int],
   };
+
+  console.log("Parámetros enviados al backend:", params);
   try {
     if (useMock) {
       return {

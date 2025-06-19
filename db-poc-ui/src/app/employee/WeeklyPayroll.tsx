@@ -3,10 +3,6 @@ import "./employeePayroll.css";
 
 const url: string = "http://localhost:3050";
 
-interface WeeklyPayrollProps {
-  userId: number; // Usar esta propiedad para las solicitudes
-}
-
 interface PayrollRow {
   WeekId: number;
   StartDate: string;
@@ -39,18 +35,30 @@ interface GrossDetail {
   DayTotal: number;
 }
 
-export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
+export default function WeeklyPayroll() {
   const [rows, setRows] = useState<PayrollRow[]>([]);
   const [deductions, setDeductions] = useState<Deduction[] | null>(null);
   const [grossDetail, setGrossDetail] = useState<GrossDetail[] | null>(null);
+  const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
 
   useEffect(() => {
     const fetchWeeklyPayroll = async () => {
       try {
-        const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/weekly/`, {
+        if (!usuarioGuardado.Id) {
+          console.error("No se encontró un usuario logueado.");
+          alert("No se encontró un usuario logueado.");
+          return;
+        }
+
+        console.log("Datos enviados al backend:", {
+          userId: usuarioGuardado.Id,
+          endpoint: `${url}/api/v2/employees/${usuarioGuardado.Id}/payroll/weekly/`,
+        });
+        const employeeId = Number(usuarioGuardado.Id);
+        const response = await fetch(`${url}/api/v2/employees/${employeeId}/payroll/weekly/`, {
           method: "GET",
           headers: {
-            "User-Id": userId.toString(),
+            "User-Id": usuarioGuardado.Id.toString(),
             "Content-Type": "application/json",
           },
         });
@@ -67,15 +75,15 @@ export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
       }
     };
 
-    fetchWeeklyPayroll();
-  }, [userId]); // Agregar userId como dependencia para que se use correctamente
+  fetchWeeklyPayroll();
+},);
 
   const handleShowDeductions = async (weekId: number) => {
     try {
-      const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/weekly/${weekId}/deductions`, {
+      const response = await fetch(`${url}/api/v2/employees/${usuarioGuardado.Id}/payroll/weekly/${weekId}/deductions`, {
         method: "GET",
         headers: {
-          "User-Id": userId.toString(),
+          "User-Id": usuarioGuardado.Id.toString(),
           "Content-Type": "application/json",
         },
       });
@@ -94,10 +102,10 @@ export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
 
   const handleShowGrossDetail = async (weekId: number) => {
     try {
-      const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/weekly/${weekId}/gross-detail`, {
+      const response = await fetch(`${url}/api/v2/employees/${usuarioGuardado.Id}/payroll/weekly/${weekId}/gross-detail`, {
         method: "GET",
         headers: {
-          "User-Id": userId.toString(),
+          "User-Id": usuarioGuardado.Id.toString(),
           "Content-Type": "application/json",
         },
       });

@@ -166,7 +166,21 @@ const InsertEmployeeModal: React.FC<InsertEmployeeModalProps> = ({ onClose, onSu
           DepartmentId: departmentId,
         }),
       });
+      console.log("Headers enviados:", {
+        "Content-Type": "application/json",
+        "User-Id": userId,
+      });
 
+      console.log("Datos enviados al backend:", {
+        Name: name,
+        NameUser: nameUser,
+        PasswordUser: passwordUser,
+        DocumentTypeId: documentTypeId,
+        DocumentValue: documentValue,
+        DateBirth: formattedDateBirth,
+        PositionId: positionId,
+        DepartmentId: departmentId,
+      });
       if (response.ok) {
         const data = await response.json();
         alert("✅ Empleado creado exitosamente.");

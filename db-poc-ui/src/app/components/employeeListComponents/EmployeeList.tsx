@@ -18,6 +18,11 @@ interface BackendEmployee {
   Id: number;
   Name: string;
   Position: string;
+  DocumentTypeId?: number; // Agregar como opcional si no siempre está presente
+  DocumentValue?: string; // Agregar como opcional si no siempre está presente
+  DateBirth?: string; // Agregar como opcional si no siempre está presente
+  PositionId?: number; // Agregar como opcional si no siempre está presente
+  DepartmentId?: number; // Agregar como opcional si no siempre está presente
 }
 
 interface BackendEmployeeResponse {
@@ -82,6 +87,11 @@ const EmployeeList = () => {
             id: empleado.Id,
             nombre: empleado.Name,
             nombrePuesto: empleado.Position,
+            tipoIdentificacion: empleado.DocumentTypeId || null, // Manejar valores opcionales
+            valorDocumento: empleado.DocumentValue || "",
+            DateBirth: empleado.DateBirth || "",
+            puestoId: empleado.PositionId || null,
+            departamentoId: empleado.DepartmentId || null,
           }))
           .sort((a, b) => a.nombre.localeCompare(b.nombre));
         setEmpleados(empleadosBackend);
@@ -179,6 +189,7 @@ const EmployeeList = () => {
   const handleEdit = (empleado: Empleado) => {
     setSelectedEmployee(empleado);
     setEditEmployeeModalVisible(true);
+    fetchEmpleados();
   };
 
   const handleDelete = async () => {

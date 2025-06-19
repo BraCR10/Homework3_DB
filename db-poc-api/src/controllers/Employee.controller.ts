@@ -629,6 +629,12 @@ export const getWeeklyPayroll = async (
     const employeeId = Number(req.params.id);
     const userIdHeader = req.headers["user-id"];
     const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    
+    console.log("Datos recibidos en el backend:", {
+      employeeId,
+      userId,
+    });
+    
     if (!employeeId || isNaN(employeeId)) {
       res.status(400).json({
         success: false,

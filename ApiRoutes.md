@@ -178,7 +178,7 @@ POST /api/v2/employees
   "NameUser": string,
   "PasswordUser": string,
   "DocumentTypeId": number,
-  "DateBirth" : date?
+  "DateBirth" : string?  //importante formatear YYYY-MM-DD
   "DocumentValue": string,
   "PositionId": number,
   "DepartmentId": number
