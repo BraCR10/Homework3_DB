@@ -76,7 +76,7 @@ export default function WeeklyPayroll() {
     };
 
     fetchWeeklyPayroll();
-  });
+  }, []);
 
   const handleShowDeductions = async (weekId: number) => {
     try {
