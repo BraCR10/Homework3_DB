@@ -18,11 +18,11 @@ interface BackendEmployee {
   Id: number;
   Name: string;
   Position: string;
-  DocumentTypeId?: number; // Agregar como opcional si no siempre está presente
-  DocumentValue?: string; // Agregar como opcional si no siempre está presente
-  DateBirth?: string; // Agregar como opcional si no siempre está presente
-  PositionId?: number; // Agregar como opcional si no siempre está presente
-  DepartmentId?: number; // Agregar como opcional si no siempre está presente
+  DocumentTypeId?: number;
+  DocumentValue?: string;
+  DateBirth?: string;
+  PositionId?: number;
+  DepartmentId?: number;
 }
 
 interface BackendEmployeeResponse {
@@ -87,7 +87,7 @@ const EmployeeList = () => {
             id: empleado.Id,
             nombre: empleado.Name,
             nombrePuesto: empleado.Position,
-            tipoIdentificacion: empleado.DocumentTypeId || null, // Manejar valores opcionales
+            tipoIdentificacion: empleado.DocumentTypeId || null,
             valorDocumento: empleado.DocumentValue || "",
             DateBirth: empleado.DateBirth || "",
             puestoId: empleado.PositionId || null,
@@ -103,44 +103,6 @@ const EmployeeList = () => {
     } catch (error) {
       console.error("Error al realizar la solicitud:", error);
       alert("Ocurrió un error al intentar cargar los empleados.");
-    }
-  };
-
-  const aplicarFiltro = async () => {
-    try {
-      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
-      if (!usuarioGuardado.Id) {
-        console.error("No se encontró un usuario logueado.");
-        alert("No se encontró un usuario logueado.");
-        return;
-      }
-
-      const response = await fetch(`${url}/api/v2/employees/search?filter=${filtro}`, {
-        method: "GET",
-        headers: {
-          "User-Id": usuarioGuardado.Id.toString(),
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const data: BackendEmployeeResponse = await response.json();
-        const empleadosFiltrados: Empleado[] = data.data
-          .map((empleado: BackendEmployee) => ({
-            id: empleado.Id,
-            nombre: empleado.Name,
-            nombrePuesto: empleado.Position,
-          }))
-          .sort((a, b) => a.nombre.localeCompare(b.nombre));
-        setEmpleados(empleadosFiltrados);
-      } else {
-        const errorData: BackendErrorResponse = await response.json();
-        console.error("Error al aplicar filtro:", errorData.error.detail);
-        alert(`Error: ${errorData.error.detail}`);
-      }
-    } catch (error) {
-      console.error("Error al realizar la solicitud:", error);
-      alert("Ocurrió un error al intentar aplicar el filtro.");
     }
   };
 
@@ -162,7 +124,6 @@ const EmployeeList = () => {
         return;
       }
 
-      console.log("Datos enviados al backend:", newEmployee);
       const response = await fetch(`${url}/api/v2/employees`, {
         method: "POST",
         headers: {
@@ -187,15 +148,15 @@ const EmployeeList = () => {
     }
   };
 
-  const handleEdit = (empleado: Empleado) => {
-    setSelectedEmployee(empleado);
-    setEditEmployeeModalVisible(true);
-    fetchEmpleados();
-  };
-
-  const handleDelete = async () => {
-    if (!employeeToDelete) return;
-
+  const handleEdit = async (updatedEmployee: {
+    id: number;
+    nombre: string;
+    tipoIdentificacion?: number;
+    valorDocumento?: string | null;
+    DateBirth?: string;
+    puestoId?: number;
+    departamentoId?: number;
+  }) => {
     try {
       const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
       if (!usuarioGuardado.Id) {
@@ -204,27 +165,34 @@ const EmployeeList = () => {
         return;
       }
 
-      const response = await fetch(`${url}/api/v2/employees/${employeeToDelete}`, {
-        method: "DELETE",
+      const response = await fetch(`${url}/api/v2/employees/${updatedEmployee.id}`, {
+        method: "PUT",
         headers: {
           "User-Id": usuarioGuardado.Id.toString(),
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          Name: updatedEmployee.nombre,
+          DocumentTypeId: updatedEmployee.tipoIdentificacion,
+          DocumentValue: updatedEmployee.valorDocumento,
+          DateBirth: updatedEmployee.DateBirth,
+          PositionId: updatedEmployee.puestoId,
+          DepartmentId: updatedEmployee.departamentoId,
+        }),
       });
 
       if (response.ok) {
-        alert("✅ Empleado eliminado exitosamente.");
+        alert("✅ Empleado actualizado exitosamente.");
         fetchEmpleados();
-        setDeleteConfirmationVisible(false);
-        setEmployeeToDelete(null);
+        setEditEmployeeModalVisible(false);
       } else {
-        const errorData = await response.json();
-        console.error("Error al eliminar empleado:", errorData.error.detail);
+        const errorData: BackendErrorResponse = await response.json();
+        console.error("Error al actualizar empleado:", errorData.error.detail);
         alert(`Error: ${errorData.error.detail}`);
       }
     } catch (error) {
       console.error("Error al realizar la solicitud:", error);
-      alert("Ocurrió un error al intentar eliminar el empleado.");
+      alert("Ocurrió un error al intentar actualizar el empleado.");
     }
   };
 
@@ -232,7 +200,7 @@ const EmployeeList = () => {
     setEmployeeToDelete(id);
     setDeleteConfirmationVisible(true);
   };
-  
+
   const handleImpersonate = (id: number) => {
     setImpersonatingEmployeeId(id);
   };
@@ -249,7 +217,7 @@ const EmployeeList = () => {
     <div className="listar-empleados-container">
       <h1>Panel de Administración - Lista de Empleados</h1>
       <div className="filtro-container">
-        <FilterBar filtro={filtro} setFiltro={setFiltro} aplicarFiltro={aplicarFiltro} />
+        <FilterBar filtro={filtro} setFiltro={setFiltro} aplicarFiltro={fetchEmpleados} />
         <button
           onClick={() => setInsertEmployeeModalVisible(true)}
           className="insertar-boton"
@@ -271,7 +239,10 @@ const EmployeeList = () => {
       </div>
       <EmployeeTable
         empleados={empleados}
-        handleEdit={handleEdit}
+        handleEdit={(empleado) => {
+          setSelectedEmployee(empleado);
+          setEditEmployeeModalVisible(true);
+        }}
         handleDelete={confirmDelete}
         handleImpersonate={handleImpersonate}
       />
@@ -285,16 +256,16 @@ const EmployeeList = () => {
         <EditEmployeeModal
           employee={selectedEmployee}
           onClose={() => setEditEmployeeModalVisible(false)}
-          onSubmit={(updatedEmployee) => {
-            console.log("Empleado actualizado:", updatedEmployee);
-            setEditEmployeeModalVisible(false);
-          }}
+          onSubmit={handleEdit}
         />
       )}
       {deleteConfirmationVisible && (
         <DeleteConfirmationModal
           empleadoId={employeeToDelete!}
-          onConfirm={handleDelete}
+          onConfirm={() => {
+            fetchEmpleados();
+            setDeleteConfirmationVisible(false);
+          }}
           onCancel={() => setDeleteConfirmationVisible(false)}
         />
       )}
