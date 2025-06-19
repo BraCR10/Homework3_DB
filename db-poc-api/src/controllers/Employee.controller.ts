@@ -259,6 +259,8 @@ export const createEmployeeV2 = async (
     }
   } 
   catch (error) {
+        console.log("s")
+    console.log(error)
     res.status(500).json({
       success: false,
       error: {
