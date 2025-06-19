@@ -227,7 +227,7 @@ async createEmployeeV2(
     inIdDocTipo: [String(data.DocumentTypeId), TYPES.Int],
     inValorDoc: [data.DocumentValue, TYPES.VarChar],
     inFechaNacimiento: [
-      data.DateBirth.toISOString().slice(0, 10),
+      data.DateBirth ? new Date(data.DateBirth).toISOString().slice(0, 10) : null,
       TYPES.DateTime
     ],
     inIdPuesto: [String(data.PositionId), TYPES.Int],
@@ -245,7 +245,6 @@ async createEmployeeV2(
     else {
       console.log(params)
       const response = await execute("sp_crear_empleado", params, {});
-      
       if (response.output.outResultCode == 0 && response.recordset.length > 0) {
         const emp = response.recordset[0];
         return {
@@ -286,7 +285,7 @@ async updateEmployeeV2(
     inIdDocTipo: [data.DocumentTypeId !== null ? String(data.DocumentTypeId) : null, TYPES.Int],
     inValorDoc: [data.DocumentValue ?? null, TYPES.VarChar],
     inFechaNacimiento: [
-      data.DateBirth ? data.DateBirth.toISOString().slice(0, 10) : null,
+      data.DateBirth ? new Date(data.DateBirth).toISOString().slice(0, 10) : null,
       TYPES.DateTime
     ],
     inIdPuesto: [data.PositionId !== null ? String(data.PositionId) : null, TYPES.Int],
