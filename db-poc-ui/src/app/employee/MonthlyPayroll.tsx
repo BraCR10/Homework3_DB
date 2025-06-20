@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./employeePayroll.css";
 
-interface MonthlyPayrollProps {
-  userId: number;
-}
+const url: string = "http://localhost:3050"; // Usar la constante URL
 
 interface PayrollRow {
   Month: number;
@@ -21,20 +19,75 @@ interface Deduction {
   Amount: number;
 }
 
-export default function MonthlyPayroll({ userId }: MonthlyPayrollProps) {
+export default function MonthlyPayroll() {
   const [rows, setRows] = useState<PayrollRow[]>([]);
   const [deductions, setDeductions] = useState<Deduction[] | null>(null);
 
   useEffect(() => {
-    fetch(`/api/v2/employees/${userId}/payroll/monthly`)
-      .then(res => res.json())
-      .then(data => setRows(data.data || []));
-  }, [userId]);
+    const fetchMonthlyPayroll = async () => {
+      try {
+        const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+        if (!usuarioGuardado.Id) {
+          console.error("No se encontró un usuario logueado.");
+          alert("No se encontró un usuario logueado.");
+          return;
+        }
 
-  const handleShowDeductions = (month: number, year: number) => {
-    fetch(`/api/v2/employees/${userId}/payroll/monthly/${year}/${month}/deductions`)
-      .then(res => res.json())
-      .then(data => setDeductions(data.data || []));
+        console.log("Datos enviados al backend:", {
+          userId: usuarioGuardado.Id,
+          endpoint: `${url}/api/v2/employees/${usuarioGuardado.Id}/payroll/monthly`,
+        });
+
+        const response = await fetch(`${url}/api/v2/employees/${usuarioGuardado.Id}/payroll/monthly`, {
+          method: "GET",
+          headers: {
+            "User-Id": usuarioGuardado.Id.toString(),
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setRows(data.data || []);
+      } catch (error) {
+        console.error("Error al obtener planillas mensuales:", error);
+        alert("Ocurrió un error al intentar obtener las planillas mensuales.");
+      }
+    };
+
+    fetchMonthlyPayroll();
+  }, []);
+
+  const handleShowDeductions = async (month: number, year: number) => {
+    try {
+      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+      if (!usuarioGuardado.Id) {
+        console.error("No se encontró un usuario logueado.");
+        alert("No se encontró un usuario logueado.");
+        return;
+      }
+
+      const response = await fetch(`${url}/api/v2/employees/${usuarioGuardado.Id}/payroll/monthly/${year}/${month}/deductions`, {
+        method: "GET",
+        headers: {
+          "User-Id": usuarioGuardado.Id.toString(),
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setDeductions(data.data || []);
+    } catch (error) {
+      console.error("Error al obtener deducciones:", error);
+      alert("Ocurrió un error al intentar obtener las deducciones.");
+    }
   };
 
   return (
@@ -50,8 +103,8 @@ export default function MonthlyPayroll({ userId }: MonthlyPayrollProps) {
           </tr>
         </thead>
         <tbody>
-          {rows.map(row => (
-            <tr key={row.Month + "-" + row.Year}>
+          {rows.map((row) => (
+            <tr key={`${row.Month}-${row.Year}`}>
               <td>{row.MonthName} {row.Year}</td>
               <td>₡{row.GrossSalary}</td>
               <td>
