@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import LoginForm from "./components/loginComponents/LoginForm";
-import EmployeeList from "./components/employeeListComponents/EmployeeList";
+import EmployeeList from "./components/AdminListComponents/EmployeeList";
 import WeeklyPayroll from "./employee/WeeklyPayroll";
 import MonthlyPayroll from "./employee/MonthlyPayroll";
 

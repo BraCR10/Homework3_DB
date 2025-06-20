@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import EmployeeList from '../components/employeeListComponents/EmployeeList';
+import EmployeeList from '../components/AdminListComponents/EmployeeList';
 
 const employee = () => {
   return <EmployeeList />;

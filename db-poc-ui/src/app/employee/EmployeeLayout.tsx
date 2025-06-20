@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import "./employeeLayout.css";
+import "../styles/employeeLayout.css";
 
 interface EmployeeLayoutProps {
   children: [ReactNode, ReactNode]; // Espera dos hijos: semanal y mensual

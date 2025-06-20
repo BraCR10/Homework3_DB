@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./employeePayroll.css";
+import "../styles/employeePayroll.css";
 
 const url: string = "http://localhost:3050"; // Usar la constante URL
 
