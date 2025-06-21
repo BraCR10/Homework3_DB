@@ -342,6 +342,36 @@ Todos los procedimientos almacenados utilizan los siguientes parámetros comunes
 }
 ```
 
+### sp_consultar_deducciones_mes
+**Descripción**: Obtiene las deducciones de un mes especifico para un empleado.
+
+**Parámetros**:
+- `@outResultCode INT OUTPUT`: Código de resultado
+- `@IdUsuario INT`: ID del usuario
+- `@IP VARCHAR(64)`: Dirección IP del cliente
+- `@IdEmpleado INT`: ID del empleado
+- `@IdMes INT`: ID del mes
+
+**Respuesta Exitosa** (`@outResultCode = 0`):
+```json
+[
+  {
+    "DeductionType": "string",
+    "isPercentage": "bool",
+    "Percentage": "number",
+    "Amount": "number"
+  }
+]
+```
+
+**Respuesta de Error** (`@outResultCode = X`):
+```json
+{
+  "message": "string"
+}
+```
+
+
 ### sp_consultar_salario_bruto_semanal
 **Descripción**: Obtiene el detalle del salario bruto semanal por día.
 
