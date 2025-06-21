@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import WeeklyPayroll from "../../employee/WeeklyPayroll";
 import MonthlyPayroll from "../../employee/MonthlyPayroll";
-//import { useRouter } from "next/navigation";
 
 const url: string = "http://localhost:3050";
 
@@ -20,11 +19,13 @@ export default function ImpersonateEmployee({ employeeId, onStopImpersonation }:
     Position: string;
     Department: string;
   } | null>(null);
-  //const router = useRouter();
 
   useEffect(() => {
     const impersonateEmployee = async () => {
       try {
+        // Limpia el estado antes de cargar nuevos datos
+        setEmployeeInfo(null);
+        
         const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
 
         if (!usuarioGuardado.Id) {

@@ -35,30 +35,22 @@ interface GrossDetail {
   DayTotal: number;
 }
 
-export default function WeeklyPayroll() {
+interface WeeklyPayrollProps {
+  userId: number; // ID del usuario impersonado
+}
+
+export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
   const [rows, setRows] = useState<PayrollRow[]>([]);
   const [deductions, setDeductions] = useState<Deduction[] | null>(null);
   const [grossDetail, setGrossDetail] = useState<GrossDetail[] | null>(null);
-  const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
 
   useEffect(() => {
     const fetchWeeklyPayroll = async () => {
       try {
-        if (!usuarioGuardado.Id) {
-          console.error("No se encontró un usuario logueado.");
-          alert("No se encontró un usuario logueado.");
-          return;
-        }
-
-        console.log("Datos enviados al backend:", {
-          userId: usuarioGuardado.Id,
-          endpoint: `${url}/api/v2/employees/${usuarioGuardado.Id}/payroll/weekly/`,
-        });
-        const employeeId = Number(usuarioGuardado.Id);
-        const response = await fetch(`${url}/api/v2/employees/${employeeId}/payroll/weekly/`, {
+        const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/weekly/`, {
           method: "GET",
           headers: {
-            "User-Id": usuarioGuardado.Id.toString(),
+            "User-Id": userId.toString(),
             "Content-Type": "application/json",
           },
         });
@@ -76,14 +68,14 @@ export default function WeeklyPayroll() {
     };
 
     fetchWeeklyPayroll();
-  }, [usuarioGuardado.Id]);
+  }, [userId]);
 
   const handleShowDeductions = async (weekId: number) => {
     try {
-      const response = await fetch(`${url}/api/v2/employees/${usuarioGuardado.Id}/payroll/weekly/${weekId}/deductions`, {
+      const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/weekly/${weekId}/deductions`, {
         method: "GET",
         headers: {
-          "User-Id": usuarioGuardado.Id.toString(),
+          "User-Id": userId.toString(),
           "Content-Type": "application/json",
         },
       });
@@ -102,10 +94,10 @@ export default function WeeklyPayroll() {
 
   const handleShowGrossDetail = async (weekId: number) => {
     try {
-      const response = await fetch(`${url}/api/v2/employees/${usuarioGuardado.Id}/payroll/weekly/${weekId}/gross-detail`, {
+      const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/weekly/${weekId}/gross-detail`, {
         method: "GET",
         headers: {
-          "User-Id": usuarioGuardado.Id.toString(),
+          "User-Id": userId.toString(),
           "Content-Type": "application/json",
         },
       });
@@ -138,38 +130,30 @@ export default function WeeklyPayroll() {
           </tr>
         </thead>
         <tbody>
-          {rows.length === 0 ? (
-            <tr>
-              <td colSpan={7}>No se encontraron planillas semanales.</td>
+          {rows.map((row) => (
+            <tr key={row.WeekId}>
+              <td>
+                {new Date(row.StartDate).toLocaleDateString()} - {new Date(row.EndDate).toLocaleDateString()}
+              </td>
+              <td>
+                <button onClick={() => handleShowGrossDetail(row.WeekId)}>
+                  ₡{row.GrossSalary}
+                </button>
+              </td>
+              <td>
+                <button onClick={() => handleShowDeductions(row.WeekId)}>
+                  ₡{row.TotalDeductions}
+                </button>
+              </td>
+              <td>₡{row.NetSalary}</td>
+              <td>{row.OrdinaryHours}</td>
+              <td>{row.NormalExtraHours}</td>
+              <td>{row.DoubleExtraHours}</td>
             </tr>
-          ) : (
-            rows.map((row) => (
-              <tr key={row.WeekId}>
-                <td>
-                  {/* Formatear las fechas antes de mostrarlas */}
-                  {new Date(row.StartDate).toLocaleDateString()} - {new Date(row.EndDate).toLocaleDateString()}
-                </td>
-                <td>
-                  <button onClick={() => handleShowGrossDetail(row.WeekId)}>
-                    ₡{row.GrossSalary}
-                  </button>
-                </td>
-                <td>
-                  <button onClick={() => handleShowDeductions(row.WeekId)}>
-                    ₡{row.TotalDeductions}
-                  </button>
-                </td>
-                <td>₡{row.NetSalary}</td>
-                <td>{row.OrdinaryHours}</td>
-                <td>{row.NormalExtraHours}</td>
-                <td>{row.DoubleExtraHours}</td>
-              </tr>
-            ))
-          )}
+          ))}
         </tbody>
       </table>
 
-      {/* Modal de deducciones */}
       {deductions && (
         <div className="modal">
           <h3>Deducciones</h3>
@@ -195,7 +179,6 @@ export default function WeeklyPayroll() {
         </div>
       )}
 
-      {/* Modal de detalle bruto */}
       {grossDetail && (
         <div className="modal">
           <h3>Detalle Diario</h3>

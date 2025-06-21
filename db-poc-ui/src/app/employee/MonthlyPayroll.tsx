@@ -19,29 +19,21 @@ interface Deduction {
   Amount: number;
 }
 
-export default function MonthlyPayroll() {
+interface MonthlyPayrollProps {
+  userId: number; // ID del usuario impersonado
+}
+
+export default function MonthlyPayroll({ userId }: MonthlyPayrollProps) {
   const [rows, setRows] = useState<PayrollRow[]>([]);
   const [deductions, setDeductions] = useState<Deduction[] | null>(null);
 
   useEffect(() => {
     const fetchMonthlyPayroll = async () => {
       try {
-        const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
-        if (!usuarioGuardado.Id) {
-          console.error("No se encontró un usuario logueado.");
-          alert("No se encontró un usuario logueado.");
-          return;
-        }
-
-        console.log("Datos enviados al backend:", {
-          userId: usuarioGuardado.Id,
-          endpoint: `${url}/api/v2/employees/${usuarioGuardado.Id}/payroll/monthly`,
-        });
-
-        const response = await fetch(`${url}/api/v2/employees/${usuarioGuardado.Id}/payroll/monthly`, {
+        const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/monthly`, {
           method: "GET",
           headers: {
-            "User-Id": usuarioGuardado.Id.toString(),
+            "User-Id": userId.toString(),
             "Content-Type": "application/json",
           },
         });
@@ -59,21 +51,14 @@ export default function MonthlyPayroll() {
     };
 
     fetchMonthlyPayroll();
-  }, []);
+  }, [userId]); // Dependencia en userId para actualizar los datos al cambiar de empleado
 
   const handleShowDeductions = async (month: number, year: number) => {
     try {
-      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
-      if (!usuarioGuardado.Id) {
-        console.error("No se encontró un usuario logueado.");
-        alert("No se encontró un usuario logueado.");
-        return;
-      }
-
-      const response = await fetch(`${url}/api/v2/employees/${usuarioGuardado.Id}/payroll/monthly/${year}/${month}/deductions`, {
+      const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/monthly/${year}/${month}/deductions`, {
         method: "GET",
         headers: {
-          "User-Id": usuarioGuardado.Id.toString(),
+          "User-Id": userId.toString(),
           "Content-Type": "application/json",
         },
       });
