@@ -63,48 +63,49 @@ const EmployeeList = () => {
     fetchEmpleados();
   }, []);
 
-  const fetchEmpleados = async () => {
-    try {
-      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
-      if (!usuarioGuardado.Id) {
-        console.error("No se encontró un usuario logueado.");
-        alert("No se encontró un usuario logueado.");
-        return;
-      }
-
-      const response = await fetch(`${url}/api/v2/employees`, {
-        method: "GET",
-        headers: {
-          "User-Id": usuarioGuardado.Id.toString(),
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const data: BackendEmployeeResponse = await response.json();
-        const empleadosBackend: Empleado[] = data.data
-          .map((empleado: BackendEmployee) => ({
-            id: empleado.Id,
-            nombre: empleado.Name,
-            nombrePuesto: empleado.Position,
-            tipoIdentificacion: empleado.DocumentTypeId || null,
-            valorDocumento: empleado.DocumentValue || "",
-            DateBirth: empleado.DateBirth || "",
-            puestoId: empleado.PositionId || null,
-            departamentoId: empleado.DepartmentId || null,
-          }))
-          .sort((a, b) => a.nombre.localeCompare(b.nombre));
-        setEmpleados(empleadosBackend);
-      } else {
-        const errorData: BackendErrorResponse = await response.json();
-        console.error("Error al obtener empleados:", errorData.error.detail);
-        alert(`Error: ${errorData.error.detail}`);
-      }
-    } catch (error) {
-      console.error("Error al realizar la solicitud:", error);
-      alert("Ocurrió un error al intentar cargar los empleados.");
+ const fetchEmpleados = async () => {
+  try {
+    const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+    if (!usuarioGuardado.Id) {
+      console.error("No se encontró un usuario logueado.");
+      alert("No se encontró un usuario logueado.");
+      return;
     }
-  };
+
+    const response = await fetch(`${url}/api/v2/employees`, {
+      method: "GET",
+      headers: {
+        "User-Id": usuarioGuardado.Id.toString(),
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data: BackendEmployeeResponse = await response.json();
+      const empleadosBackend: Empleado[] = data.data
+        .map((empleado: BackendEmployee) => ({
+          id: empleado.Id,
+          nombre: empleado.Name,
+          nombrePuesto: empleado.Position,
+          tipoIdentificacion: empleado.DocumentTypeId || null,
+          valorDocumento: empleado.DocumentValue || "",
+          DateBirth: empleado.DateBirth || "",
+          puestoId: empleado.PositionId || null,
+          departamentoId: empleado.DepartmentId || null,
+        }))
+        .filter((empleado) => empleado.nombre.toLowerCase().includes(filtro.toLowerCase())) // Aplica el filtro aquí
+        .sort((a, b) => a.nombre.localeCompare(b.nombre));
+      setEmpleados(empleadosBackend);
+    } else {
+      const errorData: BackendErrorResponse = await response.json();
+      console.error("Error al obtener empleados:", errorData.error.detail);
+      alert(`Error: ${errorData.error.detail}`);
+    }
+  } catch (error) {
+    console.error("Error al realizar la solicitud:", error);
+    alert("Ocurrió un error al intentar cargar los empleados.");
+  }
+};
 
   const handleInsertEmployee = async (newEmployee: {
     Name: string;
