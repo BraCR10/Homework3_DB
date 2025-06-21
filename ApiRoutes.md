@@ -430,7 +430,8 @@ GET /api/v2/employees/{id}/payroll/monthly
       "MonthName": string,
       "GrossSalary": number,
       "TotalDeductions": number,
-      "NetSalary": number
+      "NetSalary": number,
+      "IdMonth": number
     }
   ],
   "message": string,
