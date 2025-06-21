@@ -238,6 +238,18 @@ export interface GetMonthlyPayrollSuccessResponseDTO {
   timestamp: string;
 }
 
+export interface GetMonthlyDeductionsSuccessResponseDTO {
+  success: boolean;
+  data: {
+    DeductionType: string;
+    isPercentage: boolean;
+    Percentage: number;
+    Amount: number;
+  }[];
+  message: string;
+  timestamp: string;
+}
+
 export interface GetEmployeeByNameDTO {
   employeeName: string;
 }

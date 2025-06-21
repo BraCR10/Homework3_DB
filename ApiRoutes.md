@@ -353,6 +353,32 @@ GET /api/v2/employees/{id}/payroll/weekly/{weekId}/deductions
 }
 ```
 
+### Detalle de Deducciones mensuales (Usuario/Empleado)
+```
+GET /api/v2/employees/{id}/payroll/monthly/{monthId}/deductions
+```
+
+**Path Parameters**:
+- `monthId`: number - ID del mes
+- `id`: number - ID del empleado
+
+**Respuesta**:
+```javascript
+{
+  "success": true,
+  "data": [
+    {
+      "DeductionType": string,
+      "isPercentage" : bool,
+      "Percentage": number,
+      "Amount": number
+    }
+  ],
+  "message": string,
+  "timestamp": string
+}
+```
+
 ### Detalle de Salario Bruto Semanal (Usuario/Empleado)
 ```
 GET /api/v2/employees/{id}/payroll/weekly/{weekId}/gross-detail
@@ -404,7 +430,8 @@ GET /api/v2/employees/{id}/payroll/monthly
       "MonthName": string,
       "GrossSalary": number,
       "TotalDeductions": number,
-      "NetSalary": number
+      "NetSalary": number,
+      "IdMonth": number
     }
   ],
   "message": string,

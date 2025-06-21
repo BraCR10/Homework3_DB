@@ -847,6 +847,67 @@ export const getMonthlyPayroll = async (
   }
 };
 
+export const getMonthlyDeductions = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const employeeId = Number(req.params.id);
+    const monthId = Number(req.params.monthId);
+    const userIdHeader = req.headers["user-id"];
+    const userId = userIdHeader ? Number(userIdHeader) : undefined;
+    if (!employeeId || isNaN(employeeId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "ID de empleado es requerido y debe ser numérico."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    if (!monthId || isNaN(monthId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "ID de mes es requerido y debe ser numérico."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    if (!userId || isNaN(userId)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 400,
+          detail: "User ID is required in header and must be a number."
+        },
+        timestamp: new Date().toISOString()
+      });
+      return;
+    }
+    const ip = req.ip ? req.ip : "";
+    const response = await EmployeeService.getMonthlyDeductions(employeeId, monthId, userId, ip);
+    if (response.success) {
+      res.status(200).json(response);
+    } else {
+      res.status(500).json(response);
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 50019,
+        detail: "Error del sistema al consultar deducciones mensuales",
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+};
+
 /*
 export const getEmployeeById = async (
   req: Request,
