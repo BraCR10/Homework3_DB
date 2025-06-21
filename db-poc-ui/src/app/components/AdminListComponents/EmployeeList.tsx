@@ -63,7 +63,7 @@ const EmployeeList = () => {
     fetchEmpleados();
   }, []);
 
- const fetchEmpleados = async () => {
+  const fetchEmpleados = async () => {
   try {
     const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
     if (!usuarioGuardado.Id) {

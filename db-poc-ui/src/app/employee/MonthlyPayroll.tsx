@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/employeePayroll.css";
 
-const url: string = "http://localhost:3050"; // Usar la constante URL
+const url: string = "http://localhost:3050";
 
 interface PayrollRow {
   Month: number;
@@ -10,6 +10,7 @@ interface PayrollRow {
   GrossSalary: number;
   TotalDeductions: number;
   NetSalary: number;
+  IdMonth: number;
 }
 
 interface Deduction {
@@ -51,11 +52,11 @@ export default function MonthlyPayroll({ userId }: MonthlyPayrollProps) {
     };
 
     fetchMonthlyPayroll();
-  }, [userId]); // Dependencia en userId para actualizar los datos al cambiar de empleado
+  }, [userId]);
 
-  const handleShowDeductions = async (month: number, year: number) => {
+  const handleShowDeductions = async (IdMonth: number) => {
     try {
-      const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/monthly/${year}/${month}/deductions`, {
+      const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/monthly/${IdMonth}/deductions`, {
         method: "GET",
         headers: {
           "User-Id": userId.toString(),
@@ -89,11 +90,11 @@ export default function MonthlyPayroll({ userId }: MonthlyPayrollProps) {
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={`${row.Month}-${row.Year}`}>
+            <tr key={row.IdMonth}>
               <td>{row.MonthName} {row.Year}</td>
               <td>₡{row.GrossSalary}</td>
               <td>
-                <button onClick={() => handleShowDeductions(row.Month, row.Year)}>
+                <button onClick={() => handleShowDeductions(row.IdMonth)}>
                   ₡{row.TotalDeductions}
                 </button>
               </td>
@@ -103,7 +104,6 @@ export default function MonthlyPayroll({ userId }: MonthlyPayrollProps) {
         </tbody>
       </table>
 
-      {/* Modal de deducciones */}
       {deductions && (
         <div className="modal">
           <h3>Deducciones</h3>
