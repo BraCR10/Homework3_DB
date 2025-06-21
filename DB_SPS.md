@@ -425,7 +425,8 @@ Todos los procedimientos almacenados utilizan los siguientes parámetros comunes
     "MonthName": "string",
     "GrossSalary": "number",
     "TotalDeductions": "number",
-    "NetSalary": "number"
+    "NetSalary": "number",
+    "IdMonth": number
   }
 ]
 ```
