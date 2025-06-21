@@ -15,7 +15,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ filtro, setFiltro, aplicarFiltro 
     <div className="filtro-container">
       <input
         type="text"
-        placeholder="Filtrar por nombre o documento"
+        placeholder="Filtrar por nombre"
         value={filtro}
         onChange={(e) => setFiltro(e.target.value)}
         className="filtro-input"

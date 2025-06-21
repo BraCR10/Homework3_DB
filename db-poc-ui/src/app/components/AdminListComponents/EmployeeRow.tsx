@@ -25,7 +25,6 @@ const EmployeeRow: React.FC<EmployeeRowProps> = ({
 }) => {
   return (
     <tr>
-      <td>{empleado.id}</td>
       <td>{empleado.nombre}</td>
       <td>{empleado.nombrePuesto}</td>
       <td>

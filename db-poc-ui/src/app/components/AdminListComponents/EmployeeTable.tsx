@@ -31,7 +31,6 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
     <table className="empleados-tabla">
       <thead>
         <tr>
-          <th>ID</th>
           <th>Nombre</th>
           <th>Puesto</th>
           <th>Acciones</th>
