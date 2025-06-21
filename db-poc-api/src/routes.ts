@@ -17,6 +17,7 @@ import {
   getWeeklyDeductions,
   getWeeklyGrossDetail,
   getMonthlyPayroll,
+  getMonthlyDeductions,
   searchEmployees,
   getEmployeeById,
   updateEmployee,
@@ -55,6 +56,7 @@ router.get("/employees/:id/payroll/weekly", getWeeklyPayroll);
 router.get("/employees/:id/payroll/weekly/:weekId/deductions", getWeeklyDeductions);
 router.get("/employees/:id/payroll/weekly/:weekId/gross-detail", getWeeklyGrossDetail);
 router.get("/employees/:id/payroll/monthly", getMonthlyPayroll);
+router.get("/employees/:id/payroll/monthly/:monthId/deductions", getMonthlyDeductions);
 
 
 router.post("/employee", createEmployee);

@@ -21,6 +21,7 @@ import {
   GetWeeklyDeductionsSuccessResponseDTO,
   GetWeeklyGrossDetailSuccessResponseDTO,
   GetMonthlyPayrollSuccessResponseDTO,
+  GetMonthlyDeductionsSuccessResponseDTO,
   UpdateEmployeesDTO,
   UpdateEmployeesSuccessResponseDTO,
   TryDeleteEmployeeDTO,
@@ -821,6 +822,43 @@ async getMonthlyPayroll(
       error: {
         code: 50008,
         detail: "Error del sistema al consultar planilla mensual",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+async getMonthlyDeductions(
+  employeeId: number,
+  monthId: number,
+  userId: number,
+  ip: string
+): Promise<GetMonthlyDeductionsSuccessResponseDTO | ErrorResponseDTO> {
+  const params: inSqlParameters = {
+    inIdUsuario: [String(userId), TYPES.Int],
+    inIP: [ip, TYPES.VarChar],
+    inIdEmpleado: [String(employeeId), TYPES.Int],
+    inIdMes: [String(monthId), TYPES.Int],
+  };
+
+  try {
+    const response = await execute("sp_consultar_deducciones_mes", params, {});
+    if (response.output.outResultCode === 0) {
+      return {
+        success: true,
+        data: response.recordset,
+        message: "",
+        timestamp: new Date().toISOString(),
+      };
+    } else {
+      return ErrorHandler(response) as ErrorResponseDTO;
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: 50019,
+        detail: "Error del sistema al consultar deducciones mensuales",
       },
       timestamp: new Date().toISOString(),
     };
