@@ -24,6 +24,10 @@ interface MonthlyPayrollProps {
   userId: number; // ID del usuario impersonado
 }
 
+const capitalizeFirstLetter = (text: string): string => {
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
+
 export default function MonthlyPayroll({ userId }: MonthlyPayrollProps) {
   const [rows, setRows] = useState<PayrollRow[]>([]);
   const [deductions, setDeductions] = useState<Deduction[] | null>(null);
@@ -91,7 +95,7 @@ export default function MonthlyPayroll({ userId }: MonthlyPayrollProps) {
         <tbody>
           {rows.map((row) => (
             <tr key={row.IdMonth}>
-              <td>{row.MonthName} {row.Year}</td>
+              <td>{capitalizeFirstLetter(row.MonthName)} {row.Year}</td>
               <td>₡{row.GrossSalary}</td>
               <td>
                 <button onClick={() => handleShowDeductions(row.IdMonth)}>
