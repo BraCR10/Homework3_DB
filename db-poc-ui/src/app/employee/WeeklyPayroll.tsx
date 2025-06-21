@@ -76,7 +76,7 @@ export default function WeeklyPayroll() {
     };
 
     fetchWeeklyPayroll();
-  }, []);
+  }, [usuarioGuardado.Id]);
 
   const handleShowDeductions = async (weekId: number) => {
     try {
@@ -217,9 +217,9 @@ export default function WeeklyPayroll() {
             <tbody>
               {grossDetail.map((d, i) => (
                 <tr key={i}>
-                  <td>{d.DateDay}</td>
-                  <td>{d.EntryTime}</td>
-                  <td>{d.ExitTime}</td>
+                  <td>{new Date(d.DateDay).toLocaleDateString()}</td>
+                  <td>{new Date(d.EntryTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                  <td>{new Date(d.ExitTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                   <td>{d.OrdinaryHours}</td>
                   <td>₡{d.OrdinaryAmount}</td>
                   <td>{d.NormalExtraHours}</td>
