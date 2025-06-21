@@ -225,9 +225,6 @@ const EmployeeList = () => {
         >
           Insertar Empleado
         </button>
-        <button onClick={() => router.push("/stats")} className="insertar-boton">
-          Ver estadísticas
-        </button>
         <button
           onClick={() => {
             localStorage.clear();
