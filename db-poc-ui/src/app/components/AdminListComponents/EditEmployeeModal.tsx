@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+const url: string = "http://localhost:3050";
 
 interface EditEmployeeModalProps {
   employee: {
@@ -36,6 +37,75 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
   const [puestoId, setPuestoId] = useState<number | undefined>(employee.puestoId);
   const [departamentoId, setDepartamentoId] = useState<number | undefined>(employee.departamentoId);
   const [mensaje, setMensaje] = useState("");
+  const [puestos, setPuestos] = useState<{ Id: number; Name: string }[]>([]);
+  const [departamentos, setDepartamentos] = useState<{ Id: number; Name: string }[]>([]);
+  const [tiposIdentificacion, setTiposIdentificacion] = useState<{ Id: number; Name: string }[]>([]);
+
+  useEffect(() => {
+    const fetchCatalogs = async () => {
+      try {
+        const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+
+        if (!usuarioGuardado.Id) {
+          console.error("No se encontró el ID del usuario.");
+          alert("No se encontró el ID del usuario.");
+          return;
+        }
+
+        const userId = usuarioGuardado.Id.toString();
+
+        const [positionsResponse, departmentsResponse, documentTypesResponse] = await Promise.all([
+          fetch(`${url}/api/v2/catalogs/positions`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "User-Id": userId,
+            },
+          }),
+          fetch(`${url}/api/v2/catalogs/departments`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "User-Id": userId,
+            },
+          }),
+          fetch(`${url}/api/v2/catalogs/document-types`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "User-Id": userId,
+            },
+          }),
+        ]);
+
+        if (positionsResponse.ok) {
+          const positionsData = await positionsResponse.json();
+          setPuestos(positionsData.data || []);
+        } else {
+          console.error("Error al obtener puestos:", positionsResponse.status);
+        }
+
+        if (departmentsResponse.ok) {
+          const departmentsData = await departmentsResponse.json();
+          setDepartamentos(departmentsData.data || []);
+        } else {
+          console.error("Error al obtener departamentos:", departmentsResponse.status);
+        }
+
+        if (documentTypesResponse.ok) {
+          const documentTypesData = await documentTypesResponse.json();
+          setTiposIdentificacion(documentTypesData.data || []);
+        } else {
+          console.error("Error al obtener tipos de identificación:", documentTypesResponse.status);
+        }
+      } catch (error) {
+        console.error("Error al cargar los catálogos:", error);
+        alert("Ocurrió un error al intentar cargar los catálogos.");
+      }
+    };
+
+    fetchCatalogs();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,8 +159,11 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
               }}
             >
               <option value="">Selecciona un tipo de identificación</option>
-              <option value={1}>Cédula</option>
-              <option value={2}>Pasaporte</option>
+              {tiposIdentificacion.map((tipo) => (
+                <option key={tipo.Id} value={tipo.Id}>
+                  {tipo.Name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="form-group">
@@ -125,8 +198,11 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
               }}
             >
               <option value="">Selecciona un puesto</option>
-              <option value={1}>Gerente</option>
-              <option value={2}>Analista</option>
+              {puestos.map((puesto) => (
+                <option key={puesto.Id} value={puesto.Id}>
+                  {puesto.Name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="form-group">
@@ -139,8 +215,11 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
               }}
             >
               <option value="">Selecciona un departamento</option>
-              <option value={1}>Recursos Humanos</option>
-              <option value={2}>IT</option>
+              {departamentos.map((departamento) => (
+                <option key={departamento.Id} value={departamento.Id}>
+                  {departamento.Name}
+                </option>
+              ))}
             </select>
           </div>
           {mensaje && <p className="login-message-error">{mensaje}</p>}
