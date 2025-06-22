@@ -10,7 +10,6 @@ interface DeleteConfirmationModalProps {
 }
 
 const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
-  empleadoId,
   onConfirm,
   onCancel,
 }) => {
@@ -18,7 +17,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
     <div className="modal-overlay">
       <div className="modal-content">
         <h3>Confirmar eliminación</h3>
-        <p>¿Estás seguro de que deseas eliminar al empleado con ID {empleadoId}?</p>
+        <p>¿Estás seguro de que deseas eliminar al empleado?</p>
         <div className="modal-buttons">
           <button onClick={onConfirm} className="confirm-button">
             Eliminar
