@@ -292,3 +292,36 @@
   font-weight: bold;
   color: #cf6679; /* Mensaje de error en rojo claro */
 }
+
+.impersonate-employee-container {
+  padding: 20px;
+  background-color: #1e1e2f; /* Fondo oscuro */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  max-width: 800px;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+  color: #e0e0e0; /* Texto claro */
+}
+
+.employee-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.stop-impersonation-button {
+  background-color: #28a745; /* Rojo brillante */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.stop-impersonation-button:hover {
+  background-color: #d9363e; /* Rojo más oscuro */
+}

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import WeeklyPayroll from "../../employee/WeeklyPayroll";
 import MonthlyPayroll from "../../employee/MonthlyPayroll";
+import "../../styles/employee.css";
 
 const url: string = "http://localhost:3050";
 
@@ -97,23 +98,38 @@ export default function ImpersonateEmployee({ employeeId, onStopImpersonation }:
   if (!employeeInfo) {
     return <div>Cargando información del empleado...</div>;
   }
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return "No disponible";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  if (!employeeInfo) {
+    return <div>Cargando información del empleado...</div>;
+  }
 
   return (
     <div className="impersonate-employee-container">
-      <h2>Impersonando a {employeeInfo.Name}</h2>
-      <p><strong>Departamento:</strong> {employeeInfo.Department}</p>
-      <p><strong>Puesto:</strong> {employeeInfo.Position}</p>
-      <p><strong>DNI:</strong> {employeeInfo.DNI}</p>
-      <p><strong>Fecha de Nacimiento:</strong> {employeeInfo.DateBirth || "No disponible"}</p>
+      <div className="employee-header">
+        <div>
+          <h2>Impersonando a {employeeInfo.Name}</h2>
+          <p><strong>Departamento:</strong> {employeeInfo.Department}</p>
+          <p><strong>Puesto:</strong> {employeeInfo.Position}</p>
+          <p><strong>DNI:</strong> {employeeInfo.DNI}</p>
+          <p><strong>Fecha de Nacimiento:</strong> {formatDate(employeeInfo.DateBirth)}</p>
+        </div>
+        <button onClick={stopImpersonation} className="stop-impersonation-button">
+          Regresar a vista de administrador
+        </button>
+      </div>
 
       {/* Mostrar las interfaces de empleado */}
       <WeeklyPayroll userId={employeeId} />
       <MonthlyPayroll userId={employeeId} />
-
-      {/* Botón para regresar a la vista de administrador */}
-      <button onClick={stopImpersonation} className="stop-impersonation-button">
-        Regresar a vista de administrador
-      </button>
     </div>
   );
 }
