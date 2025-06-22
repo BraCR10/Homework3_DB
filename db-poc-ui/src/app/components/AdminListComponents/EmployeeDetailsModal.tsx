@@ -69,11 +69,20 @@ const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({ employeeId,
   const formatDate = (dateString: string) => {
     if (!dateString) return "No disponible";
     try {
+      // Crear la fecha usando el string completo para evitar problemas de zona horaria
       const date = new Date(dateString);
+      
+      // Verificar si la fecha es válida
+      if (isNaN(date.getTime())) {
+        return "Fecha inválida";
+      }
+      
+      // Usar toLocaleDateString con opciones específicas para evitar problemas de zona horaria
       return date.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
+        timeZone: 'UTC' // Forzar UTC para evitar conversiones de zona horaria
       });
     } catch {
       return "Fecha inválida";
