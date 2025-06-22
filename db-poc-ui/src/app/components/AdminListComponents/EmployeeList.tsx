@@ -9,6 +9,7 @@ import EditEmployeeModal from "./EditEmployeeModal";
 import InsertEmployeeModal from "./InsertEmployeeModal";
 import ImpersonateEmployee from "./ImpersonateEmployee";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import EmployeeDetailsModal from "./EmployeeDetailsModal";
 import { useRouter } from "next/navigation";
 
 const url: string = "http://localhost:3050";
@@ -57,6 +58,8 @@ const EmployeeList = () => {
   const [insertEmployeeModalVisible, setInsertEmployeeModalVisible] = useState(false);
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [employeeToDelete, setEmployeeToDelete] = useState<number | null>(null);
+  const [employeeDetailsModalVisible, setEmployeeDetailsModalVisible] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -210,6 +213,11 @@ const EmployeeList = () => {
     setImpersonatingEmployeeId(null);
   };
 
+  const handleView = (id: number) => {
+    setSelectedEmployeeId(id);
+    setEmployeeDetailsModalVisible(true);
+  };
+
   if (impersonatingEmployeeId) {
     return <ImpersonateEmployee employeeId={impersonatingEmployeeId} onStopImpersonation={stopImpersonation} />;
   }
@@ -243,6 +251,7 @@ const EmployeeList = () => {
         }}
         handleDelete={confirmDelete}
         handleImpersonate={handleImpersonate}
+        handleView={handleView}
       />
       {insertEmployeeModalVisible && (
         <InsertEmployeeModal
@@ -265,6 +274,15 @@ const EmployeeList = () => {
             setDeleteConfirmationVisible(false);
           }}
           onCancel={() => setDeleteConfirmationVisible(false)}
+        />
+      )}
+      {employeeDetailsModalVisible && selectedEmployeeId && (
+        <EmployeeDetailsModal
+          employeeId={selectedEmployeeId}
+          onClose={() => {
+            setEmployeeDetailsModalVisible(false);
+            setSelectedEmployeeId(null);
+          }}
         />
       )}
     </div>

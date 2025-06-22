@@ -15,6 +15,7 @@ interface EmployeeRowProps {
     nombrePuesto: string;
   }) => void;
   handleImpersonate: (id: number) => void; // Nueva función para impersonar
+  handleView: (id: number) => void; // Nueva función para ver detalles
 }
 
 const EmployeeRow: React.FC<EmployeeRowProps> = ({
@@ -22,12 +23,19 @@ const EmployeeRow: React.FC<EmployeeRowProps> = ({
   handleDelete,
   handleEdit,
   handleImpersonate, // Recibir la función como prop
+  handleView, // Recibir la nueva función como prop
 }) => {
   return (
     <tr>
       <td>{empleado.nombre}</td>
       <td>{empleado.nombrePuesto}</td>
       <td>
+        <button
+          onClick={() => handleView(empleado.id)}
+          className="ver-boton"
+        >
+          Ver
+        </button>
         <button
           onClick={() => handleImpersonate(empleado.id)}
           className="impersonar-boton"

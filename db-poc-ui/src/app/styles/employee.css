@@ -35,7 +35,7 @@
   }
 
   .insertar-boton:hover {
-    background-color: #218838; /* Verde más oscuro */
+    background-color: #218838; /* Verde más oscuro al pasar el mouse */
   }
   
   /* Input del filtro */
@@ -74,57 +74,92 @@
   .empleados-tabla {
     width: 100%;
     border-collapse: collapse;
-    background-color: #1e1e1e; /* Fondo oscuro */
-    color: #e0e0e0; /* Texto claro */
+    margin-top: 20px;
+    background-color: #1e1e1e; /* Fondo de la tabla */
+    border-radius: 8px;
+    overflow: hidden;
   }
   
   .empleados-tabla th,
   .empleados-tabla td {
-    border: 1px solid #333; /* Borde tenue */
     padding: 12px;
     text-align: left;
+    border-bottom: 1px solid #333;
   }
   
   .empleados-tabla th {
-    background-color: #2c2c2c; /* Fondo ligeramente más claro */
+    background-color: #2a2a2a; /* Fondo del encabezado */
+    color: #fff;
     font-weight: bold;
-    color: #ffffff; /* Texto blanco */
-    text-align: center; /* Centra el texto horizontalmente */
-    vertical-align: middle; /* Centra el texto verticalmente */
-    padding: 12px; /* Espaciado interno para mejor apariencia */
-  }
-  
-  .empleados-tabla tr:nth-child(even) {
-    background-color: #1a1a1a; /* Fondo alternativo */
+    font-size: 16px;
   }
   
   .empleados-tabla tr:hover {
-    background-color: #333; /* Fondo al pasar el mouse */
+    background-color: #2a2a2a; /* Fondo al pasar el mouse */
   }
   
-  /* Botones de acciones */
-  button {
-    padding: 8px 12px;
-    margin-right: 5px;
-    background-color: #28a745; /* Verde brillante */
+  /* Botones de acción */
+  .ver-boton {
+    background-color: #007bff; /* Azul para ver */
     color: white;
     border: none;
-    cursor: pointer;
+    padding: 6px 12px;
+    margin-right: 5px;
     border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
     transition: background-color 0.3s ease;
   }
   
-  button:hover {
-    background-color: #218838; /* Verde más oscuro */
+  .ver-boton:hover {
+    background-color: #0056b3;
   }
   
-  /* Botón de eliminar */
-  button.eliminar {
-    background-color: #dc3545; /* Rojo brillante */
+  .impersonar-boton {
+    background-color: #ffc107; /* Amarillo para impersonar */
+    color: #212529;
+    border: none;
+    padding: 6px 12px;
+    margin-right: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
   }
   
-  button.eliminar:hover {
-    background-color: #c82333; /* Rojo más oscuro */
+  .impersonar-boton:hover {
+    background-color: #e0a800;
+  }
+  
+  .editar-boton {
+    background-color: #17a2b8; /* Azul claro para editar */
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    margin-right: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .editar-boton:hover {
+    background-color: #138496;
+  }
+  
+  .eliminar-boton {
+    background-color: #dc3545; /* Rojo para eliminar */
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .eliminar-boton:hover {
+    background-color: #c82333;
   }
   
   /* Mensaje cuando no hay empleados */
@@ -256,19 +291,4 @@
   text-align: center;
   font-weight: bold;
   color: #cf6679; /* Mensaje de error en rojo claro */
-}
-
-/* Botón de impersonar */
-.impersonar-boton {
-  background-color: #007bff; /* Azul brillante */
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.impersonar-boton:hover {
-  background-color: #0056b3; /* Azul más oscuro */
 }

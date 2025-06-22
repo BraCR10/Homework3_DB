@@ -16,6 +16,7 @@ interface EmployeeTableProps {
     nombrePuesto: string;
   }) => void;
   handleImpersonate: (id: number) => void;
+  handleView: (id: number) => void;
 }
 
 const EmployeeTable: React.FC<EmployeeTableProps> = ({
@@ -23,6 +24,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
   handleDelete,
   handleEdit,
   handleImpersonate,
+  handleView,
 }) => {
   if (empleados.length === 0) {
     return <p>No hay empleados para mostrar.</p>;
@@ -39,11 +41,12 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({
       <tbody>
         {empleados.map((empleado) => (
           <EmployeeRow
-            key={empleado.id} // Agregar la propiedad `key` única
+            key={empleado.id}
             empleado={empleado}
             handleDelete={handleDelete}
             handleEdit={handleEdit}
             handleImpersonate={handleImpersonate}
+            handleView={handleView}
           />
         ))}
       </tbody>
