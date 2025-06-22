@@ -1,6 +1,6 @@
 ﻿USE [DB_Tarea3]
 GO
-/****** Object:  StoredProcedure [dbo].[sp_asistencia_cierres]    Script Date: 19/6/2025 23:51:21 ******/
+/****** Object:  StoredProcedure [dbo].[sp_asistencia_cierres]    Script Date: 22/6/2025 15:46:58 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -184,6 +184,14 @@ BEGIN
 
 		---------------------------------------------------------------------------------------------------------------------
 		-- INICIALIZACION Y CONFIGURACION
+
+		-- Verificar que las tablas existan
+		IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'MarcaAsistencia' AND schema_id = SCHEMA_ID('dbo'))
+		BEGIN
+			SET @outResultCode = 50009; -- Error: tabla no existe
+			SELECT 'La tabla MarcaAsistencia no existe. Ejecute sp_generar_tablas primero.' AS 'message';
+			RETURN;
+		END
 
 		-- Insertando asistencias del XML
 		INSERT INTO @TempAsistencias (
@@ -918,12 +926,12 @@ BEGIN
 				WHILE(@DeduccionesSemanaFijaCant >= @DeduccionesSemanaFijaIndice AND @flagTieneDeduccionesFijas = 1 AND @flagEsJueves = 1)
 				BEGIN 
 					SELECT 
-						@TempValor = TFD.Valor,
-						@TempTipoDeduccion = TFD.IdTipoDeduccion,
-						@TempEmpleadoTipoDeduccion = TFD.IdEmpleadoTipoDeduccion,
-						@TempFlagObligatorio = TFD.FlagObligatoria
+						@TempValor = TFD.Valor
+						,@TempTipoDeduccion = TFD.IdTipoDeduccion
+						,@TempEmpleadoTipoDeduccion = TFD.IdEmpleadoTipoDeduccion
+						,@TempFlagObligatorio = TFD.FlagObligatoria
 					FROM @TempDeduccionesFijasData AS TFD
-					WHERE TFD.Indice = @DeduccionesSemanaFijaIndice;
+					WHERE( TFD.Indice = @DeduccionesSemanaFijaIndice);
 
 					-- Se tiene salario bruto pues puede ser un empleado recien insertado
 					IF(@TempValor>0)
@@ -1125,7 +1133,8 @@ BEGIN
 				WHERE (NOT EXISTS(SELECT 1 FROM dbo.EmpleadoXMesPlanilla AS MP 
 						WHERE (MP.IdMesPlanilla = @TempMesPlanillaId) AND (MP.IdEmpleado = @idEmpleado))) 
 					AND (@EmpleadoActivo = 1)
-					AND (@flagEsJueves = 1);
+					AND (@flagEsJueves = 1)
+					AND ((@NumeroJueves=@TotalJueves) OR (@inFecha = '2023-06-01'));
 
 				-- Obtener el ID del EmpleadoXMesPlanilla (ya sea recién insertado o existente)
 				SELECT @TempEmpleadoXMesPlanillaId = Id
@@ -1133,7 +1142,8 @@ BEGIN
 				WHERE (IdMesPlanilla = @TempMesPlanillaId) 
 					AND (IdEmpleado = @idEmpleado)
 					AND (@EmpleadoActivo = 1)
-					AND (@flagEsJueves = 1);
+					AND (@flagEsJueves = 1)
+					AND ((@NumeroJueves=@TotalJueves) OR (@inFecha = '2023-06-01'));
 
 				-- Insertar deducciones solo si se cumplieron las condiciones originales
 				INSERT INTO dbo.EmpleadoXMesPlanillaXTipoDeduccion (
@@ -1147,11 +1157,13 @@ BEGIN
 					, ET.IdTipoDeduccion 
 				FROM dbo.EmpleadoXTipoDeduccion AS ET
 				WHERE (ET.IdEmpleado = @idEmpleado)
-					AND (NOT EXISTS(SELECT 1 FROM dbo.EmpleadoXMesPlanilla AS MP 
-							WHERE (MP.IdMesPlanilla = @TempMesPlanillaId) AND (MP.IdEmpleado = @idEmpleado))) 
+					AND ( NOT EXISTS(SELECT 1 FROM dbo.EmpleadoXMesPlanillaXTipoDeduccion AS MP 
+							WHERE (MP.IdEmpleadoXMesPlanilla = @TempEmpleadoXMesPlanillaId) AND (MP.IdTipoDeduccion = ET.IdTipoDeduccion))) 
 					AND (@EmpleadoActivo = 1)
 					AND (@TempEmpleadoXMesPlanillaId IS NOT NULL)
-					AND (@flagEsJueves = 1);
+					AND (@flagEsJueves = 1)
+					AND ((@NumeroJueves=@TotalJueves) OR (@inFecha = '2023-06-01'));
+;
 
 				-- Abriendo semana
 				-- Insertar SemanaPlanilla solo si no existe
