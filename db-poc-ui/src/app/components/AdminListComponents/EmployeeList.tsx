@@ -67,48 +67,48 @@ const EmployeeList = () => {
   }, []);
 
   const fetchEmpleados = async () => {
-  try {
-    const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
-    if (!usuarioGuardado.Id) {
-      console.error("No se encontró un usuario logueado.");
-      alert("No se encontró un usuario logueado.");
-      return;
-    }
+    try {
+      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+      if (!usuarioGuardado.Id) {
+        console.error("No se encontró un usuario logueado.");
+        alert("No se encontró un usuario logueado.");
+        return;
+      }
 
-    const response = await fetch(`${url}/api/v2/employees`, {
-      method: "GET",
-      headers: {
-        "User-Id": usuarioGuardado.Id.toString(),
-        "Content-Type": "application/json",
-      },
-    });
+      const response = await fetch(`${url}/api/v2/employees`, {
+        method: "GET",
+        headers: {
+          "User-Id": usuarioGuardado.Id.toString(),
+          "Content-Type": "application/json",
+        },
+      });
 
-    if (response.ok) {
-      const data: BackendEmployeeResponse = await response.json();
-      const empleadosBackend: Empleado[] = data.data
-        .map((empleado: BackendEmployee) => ({
-          id: empleado.Id,
-          nombre: empleado.Name,
-          nombrePuesto: empleado.Position,
-          tipoIdentificacion: empleado.DocumentTypeId || null,
-          valorDocumento: empleado.DocumentValue || "",
-          DateBirth: empleado.DateBirth || "",
-          puestoId: empleado.PositionId || null,
-          departamentoId: empleado.DepartmentId || null,
-        }))
-        .filter((empleado) => empleado.nombre.toLowerCase().includes(filtro.toLowerCase())) // Aplica el filtro aquí
-        .sort((a, b) => a.nombre.localeCompare(b.nombre));
-      setEmpleados(empleadosBackend);
-    } else {
-      const errorData: BackendErrorResponse = await response.json();
-      console.error("Error al obtener empleados:", errorData.error.detail);
-      alert(`Error: ${errorData.error.detail}`);
+      if (response.ok) {
+        const data: BackendEmployeeResponse = await response.json();
+        const empleadosBackend: Empleado[] = data.data
+          .map((empleado: BackendEmployee) => ({
+            id: empleado.Id,
+            nombre: empleado.Name,
+            nombrePuesto: empleado.Position,
+            tipoIdentificacion: empleado.DocumentTypeId || null,
+            valorDocumento: empleado.DocumentValue || "",
+            DateBirth: empleado.DateBirth || "",
+            puestoId: empleado.PositionId || null,
+            departamentoId: empleado.DepartmentId || null,
+          }))
+          .filter((empleado) => empleado.nombre.toLowerCase().includes(filtro.toLowerCase())) // Aplica el filtro aquí
+          .sort((a, b) => a.nombre.localeCompare(b.nombre));
+        setEmpleados(empleadosBackend);
+      } else {
+        const errorData: BackendErrorResponse = await response.json();
+        console.error("Error al obtener empleados:", errorData.error.detail);
+        alert(`Error: ${errorData.error.detail}`);
+      }
+    } catch (error) {
+      console.error("Error al realizar la solicitud:", error);
+      alert("Ocurrió un error al intentar cargar los empleados.");
     }
-  } catch (error) {
-    console.error("Error al realizar la solicitud:", error);
-    alert("Ocurrió un error al intentar cargar los empleados.");
-  }
-};
+  };
 
   const handleInsertEmployee = async (newEmployee: {
     Name: string;
@@ -200,6 +200,38 @@ const EmployeeList = () => {
     }
   };
 
+  const handleDelete = async (id: number) => {
+    try {
+      const usuarioGuardado = JSON.parse(localStorage.getItem("usuario") || "{}");
+      if (!usuarioGuardado.Id) {
+        console.error("No se encontró un usuario logueado.");
+        alert("No se encontró un usuario logueado.");
+        return;
+      }
+
+      const response = await fetch(`${url}/api/v2/employees/${id}`, {
+        method: "DELETE",
+        headers: {
+          "User-Id": usuarioGuardado.Id.toString(),
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        alert("✅ Empleado eliminado exitosamente.");
+        fetchEmpleados(); // Actualiza la lista de empleados
+        setDeleteConfirmationVisible(false); // Cierra el modal
+      } else {
+        const errorData: BackendErrorResponse = await response.json();
+        console.error("Error al eliminar empleado:", errorData.error.detail);
+        alert(`Error: ${errorData.error.detail}`);
+      }
+    } catch (error) {
+      console.error("Error al realizar la solicitud:", error);
+      alert("Ocurrió un error al intentar eliminar el empleado.");
+    }
+  };
+
   const confirmDelete = (id: number) => {
     setEmployeeToDelete(id);
     setDeleteConfirmationVisible(true);
@@ -269,10 +301,7 @@ const EmployeeList = () => {
       {deleteConfirmationVisible && (
         <DeleteConfirmationModal
           empleadoId={employeeToDelete!}
-          onConfirm={() => {
-            fetchEmpleados();
-            setDeleteConfirmationVisible(false);
-          }}
+          onConfirm={() => handleDelete(employeeToDelete!)} // Llama a handleDelete
           onCancel={() => setDeleteConfirmationVisible(false)}
         />
       )}
