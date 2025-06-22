@@ -61,6 +61,21 @@ interface WeeklyPayrollProps {
   userId: number; // ID del usuario impersonado
 }
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const day = date.getUTCDate();
+  const month = date.getUTCMonth() + 1;
+  const year = date.getUTCFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+const formatTime = (dateString: string) => {
+  const date = new Date(dateString);
+  const hours = date.getUTCHours().toString().padStart(2, '0');
+  const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+};
+
 export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
   const [rows, setRows] = useState<PayrollRow[]>([]);
   const [hours, setHours] = useState<HoursRow[]>([]);
@@ -213,7 +228,7 @@ export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
     return (
       <tr key={row.WeekId}>
         <td>
-          {new Date(row.StartDate).toLocaleDateString()} - {new Date(row.EndDate).toLocaleDateString()}
+          {formatDate(row.StartDate)} - {formatDate(row.EndDate)}
         </td>
         <td>
           <button onClick={() => handleShowGrossDetail(row.WeekId)}>
@@ -281,9 +296,9 @@ export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
           <tbody>
             {grossDetail.map((d, i) => (
               <tr key={i}>
-                <td>{new Date(d.DateDay).toLocaleDateString()}</td>
-                <td>{new Date(d.EntryTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-                <td>{new Date(d.ExitTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                <td>{formatDate(d.DateDay)}</td>
+                <td>{formatTime(d.EntryTime)}</td>
+                <td>{formatTime(d.ExitTime)}</td>
                 <td>{d.OrdinaryHours}</td>
                 <td>₡{d.OrdinaryAmount}</td>
                 <td>{d.NormalExtraHours}</td>
