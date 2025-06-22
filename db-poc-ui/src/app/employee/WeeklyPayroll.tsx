@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import "../styles/employeePayroll.css";
 
@@ -35,12 +37,33 @@ interface GrossDetail {
   DayTotal: number;
 }
 
+interface HoursRow {
+  WeekId: number;
+  OrdinaryHours: number; // Horas ordinarias
+  NormalExtraHours: number; // Horas extra normales (1.5x)
+  DoubleExtraHours: number; // Horas extra dobles (2.0x)
+}
+
+interface DayDetail {
+  DateDay: string;
+  EntryTime: string;
+  ExitTime: string;
+  OrdinaryHours: number;
+  OrdinaryAmount: number;
+  NormalExtraHours: number;
+  NormalExtraAmount: number;
+  DoubleExtraHours: number;
+  DoubleExtraAmount: number;
+  DayTotal: number;
+}
+
 interface WeeklyPayrollProps {
   userId: number; // ID del usuario impersonado
 }
 
 export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
   const [rows, setRows] = useState<PayrollRow[]>([]);
+  const [hours, setHours] = useState<HoursRow[]>([]);
   const [deductions, setDeductions] = useState<Deduction[] | null>(null);
   const [grossDetail, setGrossDetail] = useState<GrossDetail[] | null>(null);
 
@@ -69,6 +92,59 @@ export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
 
     fetchWeeklyPayroll();
   }, [userId]);
+
+  useEffect(() => {
+  const fetchHoursForWeeks = async () => {
+    try {
+      const hoursData: HoursRow[] = [];
+
+      // Realizar un fetch por cada WeekId para obtener las horas
+      for (const row of rows) {
+        const response = await fetch(`${url}/api/v2/employees/${userId}/payroll/weekly/${row.WeekId}/gross-detail`, {
+          method: "GET",
+          headers: {
+            "User-Id": userId.toString(),
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        // Log para verificar la respuesta del backend
+        console.log(`Horas para WeekId ${row.WeekId}:`, data);
+
+        // Sumar las horas de cada día para obtener el total por semana
+        const totalOrdinaryHours = data.data.reduce((sum: number, day: DayDetail) => sum + day.OrdinaryHours, 0);
+        const totalNormalExtraHours = data.data.reduce((sum: number, day: DayDetail) => sum + day.NormalExtraHours, 0);
+        const totalDoubleExtraHours = data.data.reduce((sum: number, day: DayDetail) => sum + day.DoubleExtraHours, 0);
+
+        // Agregar las horas al arreglo
+        hoursData.push({
+          WeekId: row.WeekId,
+          OrdinaryHours: totalOrdinaryHours,
+          NormalExtraHours: totalNormalExtraHours,
+          DoubleExtraHours: totalDoubleExtraHours,
+        });
+      }
+
+      // Log para verificar el estado final de las horas
+      console.log("Horas obtenidas:", hoursData);
+
+      setHours(hoursData);
+    } catch (error) {
+      console.error("Error al obtener horas semanales:", error);
+      alert("Ocurrió un error al intentar obtener las horas semanales.");
+    }
+  };
+
+  if (rows.length > 0) {
+    fetchHoursForWeeks();
+  }
+}, [rows, userId]);
 
   const handleShowDeductions = async (weekId: number) => {
     try {
@@ -114,109 +190,114 @@ export default function WeeklyPayroll({ userId }: WeeklyPayrollProps) {
     }
   };
 
-  return (
-    <div className="employee-payroll-container">
-      <h2>Planilla Semanal</h2>
-      <table className="empleados-tabla">
-        <thead>
-          <tr>
-            <th>Semana</th>
-            <th>Salario Bruto</th>
-            <th>Deducciones</th>
-            <th>Salario Neto</th>
-            <th>Horas Ordinarias</th>
-            <th>Horas Extra (1.5x)</th>
-            <th>Horas Extra (2.0x)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.WeekId}>
-              <td>
-                {new Date(row.StartDate).toLocaleDateString()} - {new Date(row.EndDate).toLocaleDateString()}
-              </td>
-              <td>
-                <button onClick={() => handleShowGrossDetail(row.WeekId)}>
-                  ₡{row.GrossSalary}
-                </button>
-              </td>
-              <td>
-                <button onClick={() => handleShowDeductions(row.WeekId)}>
-                  ₡{row.TotalDeductions}
-                </button>
-              </td>
-              <td>₡{row.NetSalary}</td>
-              <td>{row.OrdinaryHours}</td>
-              <td>{row.NormalExtraHours}</td>
-              <td>{row.DoubleExtraHours}</td>
+ return (
+  <div className="employee-payroll-container">
+    <h2>Planilla Semanal</h2>
+    <table className="empleados-tabla">
+      <thead>
+        <tr>
+          <th>Semana</th>
+          <th>Salario Bruto</th>
+          <th>Deducciones</th>
+          <th>Salario Neto</th>
+          <th>Horas Ordinarias</th>
+          <th>Horas Extra (1.5x)</th>
+          <th>Horas Extra (2.0x)</th>
+        </tr>
+      </thead>
+      <tbody>
+  {rows.map((row) => {
+    // Buscar las horas correspondientes a la semana actual
+    const weekHours = hours.find((h) => h.WeekId === row.WeekId);
+
+    return (
+      <tr key={row.WeekId}>
+        <td>
+          {new Date(row.StartDate).toLocaleDateString()} - {new Date(row.EndDate).toLocaleDateString()}
+        </td>
+        <td>
+          <button onClick={() => handleShowGrossDetail(row.WeekId)}>
+            ₡{row.GrossSalary}
+          </button>
+        </td>
+        <td>
+          <button onClick={() => handleShowDeductions(row.WeekId)}>
+            ₡{row.TotalDeductions}
+          </button>
+        </td>
+        <td>₡{row.NetSalary}</td>
+        <td>{weekHours?.OrdinaryHours} hrs</td>
+        <td>{weekHours?.NormalExtraHours} hrs</td>
+        <td>{weekHours?.DoubleExtraHours} hrs</td>
+      </tr>
+    );
+  })}
+</tbody>
+    </table>
+
+    {deductions && (
+      <div className="modal">
+        <h3>Deducciones</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Porcentaje</th>
+              <th>Monto</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {deductions && (
-        <div className="modal">
-          <h3>Deducciones</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Porcentaje</th>
-                <th>Monto</th>
+          </thead>
+          <tbody>
+            {deductions.map((d, i) => (
+              <tr key={i}>
+                <td>{d.DeductionType}</td>
+                <td>{d.isPercentage ? `${d.Percentage}%` : "-"}</td>
+                <td>₡{d.Amount}</td>
               </tr>
-            </thead>
-            <tbody>
-              {deductions.map((d, i) => (
-                <tr key={i}>
-                  <td>{d.DeductionType}</td>
-                  <td>{d.isPercentage ? `${d.Percentage}%` : "-"}</td>
-                  <td>₡{d.Amount}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button onClick={() => setDeductions(null)}>Cerrar</button>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+        <button onClick={() => setDeductions(null)}>Cerrar</button>
+      </div>
+    )}
 
-      {grossDetail && (
-        <div className="modal">
-          <h3>Detalle Diario</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Día</th>
-                <th>Entrada</th>
-                <th>Salida</th>
-                <th>Horas Ordinarias</th>
-                <th>Monto Ordinario</th>
-                <th>Horas Extra (1.5x)</th>
-                <th>Monto Extra (1.5x)</th>
-                <th>Horas Extra (2.0x)</th>
-                <th>Monto Extra (2.0x)</th>
-                <th>Total Día</th>
+    {grossDetail && (
+      <div className="modal">
+        <h3>Detalle Diario</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Día</th>
+              <th>Entrada</th>
+              <th>Salida</th>
+              <th>Horas Ordinarias</th>
+              <th>Monto Ordinario</th>
+              <th>Horas Extra (1.5x)</th>
+              <th>Monto Extra (1.5x)</th>
+              <th>Horas Extra (2.0x)</th>
+              <th>Monto Extra (2.0x)</th>
+              <th>Total Día</th>
+            </tr>
+          </thead>
+          <tbody>
+            {grossDetail.map((d, i) => (
+              <tr key={i}>
+                <td>{new Date(d.DateDay).toLocaleDateString()}</td>
+                <td>{new Date(d.EntryTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                <td>{new Date(d.ExitTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                <td>{d.OrdinaryHours}</td>
+                <td>₡{d.OrdinaryAmount}</td>
+                <td>{d.NormalExtraHours}</td>
+                <td>₡{d.NormalExtraAmount}</td>
+                <td>{d.DoubleExtraHours}</td>
+                <td>₡{d.DoubleExtraAmount}</td>
+                <td>₡{d.DayTotal}</td>
               </tr>
-            </thead>
-            <tbody>
-              {grossDetail.map((d, i) => (
-                <tr key={i}>
-                  <td>{new Date(d.DateDay).toLocaleDateString()}</td>
-                  <td>{new Date(d.EntryTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-                  <td>{new Date(d.ExitTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-                  <td>{d.OrdinaryHours}</td>
-                  <td>₡{d.OrdinaryAmount}</td>
-                  <td>{d.NormalExtraHours}</td>
-                  <td>₡{d.NormalExtraAmount}</td>
-                  <td>{d.DoubleExtraHours}</td>
-                  <td>₡{d.DoubleExtraAmount}</td>
-                  <td>₡{d.DayTotal}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button onClick={() => setGrossDetail(null)}>Cerrar</button>
-        </div>
-      )}
-    </div>
-  );
-}
+            ))}
+          </tbody>
+        </table>
+        <button onClick={() => setGrossDetail(null)}>Cerrar</button>
+      </div>
+    )}
+  </div>
+);
+};
